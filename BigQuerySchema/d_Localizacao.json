@@ -1,0 +1,58 @@
+[
+    {
+      "name": "NO_MUNICIPIO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "ANO_REF",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "UF",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "ESTADO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "REGIAO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "MICRORREGIAO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "POP_TOTAL",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "POP_URB",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "FAIXA_POP",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "DESC_FAIXA",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "AREA_KM2",
+      "type": "FLOAT",
+      "mode": "NULLABLE"
+    }
+  ]
+  

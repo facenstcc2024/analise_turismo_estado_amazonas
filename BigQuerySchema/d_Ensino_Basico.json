@@ -1,0 +1,12 @@
+[
+    {
+      "name": "NO_MUNICIPIO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "QT_MAT_BAS",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    }
+  ]

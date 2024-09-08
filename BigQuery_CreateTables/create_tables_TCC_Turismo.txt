@@ -1,0 +1,69 @@
+--Criando o dataset TCC_Turismo
+
+bq --location=southamerica-east1 mk \
+--default_table_expiration 0 \
+--dataset TCC_Turismo
+
+
+
+
+criação tabelas via linha de comando cloud shell
+###########################################################
+abrir console gcp
+abrir clod shell
+opções do cloud shell, upload pasta BigQuerySchema
+rodar os comando abaixo
+
+
+
+________________________________________________
+bq mk --table \
+TCC_Turismo.d_Agua \
+BigQuerySchema/d_Agua.json
+
+______________________________________________
+bq mk --table \
+TCC_Turismo.d_Ensino_Basico \
+BigQuerySchema/d_Ensino_Basico.json
+
+______________________________________________
+
+bq mk --table \
+TCC_Turismo.d_Ensino_Superior \
+BigQuerySchema/d_Ensino_Superior.json
+
+_____________________________________________
+
+bq mk --table \
+TCC_Turismo.d_Ensino_tecnico \
+BigQuerySchema/d_Ensino_tecnico.json
+
+____________________________________________
+bq mk --table \
+TCC_Turismo.d_infra_Turismo \
+BigQuerySchema/d_infra_Turismo.json
+
+____________________________________________
+bq mk --table \
+TCC_Turismo.d_Localizacao \
+BigQuerySchema/d_Localizacao.json
+
+
+bq mk --table \
+TCC_Turismo.d_Regiao_Turistica \
+BigQuerySchema/d_Regiao_Turistica.json
+
+
+bq mk --table \
+TCC_Turismo.d_saude \
+BigQuerySchema/d_saude.json
+
+
+bq mk --table \
+TCC_Turismo.variavel_dependente_visitantes_tabela_1 \
+BigQuerySchema/variavel_dependente_visitantes_tabela_1.json
+
+
+bq mk --table \
+TCC_Turismo.variavel_dependente_visitantes_tabela_2 \
+BigQuerySchema/variavel_dependente_visitantes_tabela_2.json

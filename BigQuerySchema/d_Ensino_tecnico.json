@@ -1,0 +1,22 @@
+[
+    {
+      "name": "NO_MUNICIPIO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "NO_AREA_CURSO_PROFISSIONAL",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "NO_CURSO_EDUC_PROFISSIONAL",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+        "name": "QT_MAT_CURSO_TEC",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+    }
+  ]

@@ -1,0 +1,128 @@
+
+
+
+###### carga bigquery##
+
+--carregar dados do CSV para a tabela Jobs Staging
+abrir console gcp
+abrir clod shell
+rodar os comando abaixo
+
+Observação : Os processos de criação de dados no dataflow e a criação 
+do dataset TCC_Turismo_staging e suas tabelas  devem ter sido concluidos para realização dessa etapa
+Todos os comando abaixo levam em consideração o que os arquivos estão armazemados em gs://dados_tcc_facens_sp/output/,
+será necessário mudar os comandos caso o storage e nome dos arquivos mude .
+
+#########################
+
+
+bq \
+--location=southamerica-east1 \
+load \
+--source_format=CSV \
+TCC_Turismo_staging.d_Agua \
+'gs://dados_tcc_facens_sp/output/d_agua-00000-of-00001.csv'
+
+#########################
+
+bq \
+--location=southamerica-east1 \
+load \
+--source_format=CSV \
+TCC_Turismo_staging.d_Ensino_Basico \
+'gs://dados_tcc_facens_sp/output/d_ed_basica_lucas-00000-of-00001.csv'
+
+#########################
+
+bq \
+--location=southamerica-east1 \
+load \
+--source_format=CSV \
+TCC_Turismo_staging.d_Ensino_Superior \
+'gs://dados_tcc_facens_sp/output/d_ed_superior_lucas-00000-of-00001.csv'
+
+#########################
+
+bq \
+--location=southamerica-east1 \
+load \
+--source_format=CSV \
+TCC_Turismo_staging.d_Ensino_tecnico \
+'gs://dados_tcc_facens_sp/output/d_ed_tecnica_lucas-00000-of-00001.csv'
+
+#########################
+
+bq \
+--location=southamerica-east1 \
+load \
+--source_format=CSV \
+TCC_Turismo_staging.d_infra_Turismo \
+'gs://dados_tcc_facens_sp/output/d_infra_turismo_lucas-00000-of-00001.csv'
+
+#########################
+
+bq \
+--location=southamerica-east1 \
+load \
+--source_format=CSV \
+TCC_Turismo_staging.d_infra_Turismo \
+'gs://dados_tcc_facens_sp/output/d_infra_turismo_novinho.csv'
+
+#########################
+
+
+bq \
+--location=southamerica-east1 \
+load \
+--source_format=CSV \
+TCC_Turismo_staging.d_Localizacao \
+'gs://dados_tcc_facens_sp/output/d_infra_turismo_lucas-00000-of-00001.csv'
+
+
+#########################
+
+bq \
+--location=southamerica-east1 \
+load \
+--source_format=CSV \
+TCC_Turismo_staging.d_saude \
+'gs://dados_tcc_facens_sp/output/d_leitos.csv-00000-of-00001'
+
+#########################
+
+bq \
+--location=southamerica-east1 \
+load \
+--source_format=CSV \
+TCC_Turismo_staging.variavel_dependente_visitantes_tabela_1 \
+'gs://dados_tcc_facens_sp/output/variavel_dependente_visitantes_tabela_1.csv-00000-of-00001'
+
+#########################
+
+bq \
+--location=southamerica-east1 \
+load \
+--source_format=CSV \
+TCC_Turismo_staging.variavel_dependente_visitantes_tabela_2 \
+'gs://dados_tcc_facens_sp/output/variavel_dependente_visitantes_tabela_2.csv-00000-of-00001'
+
+
+###########################
+
+bq \
+--location=southamerica-east1 \
+load \
+--source_format=CSV \
+TCC_Turismo_staging.d_Localizacao \
+'gs://dados_tcc_facens_sp/output/tabela_d_populacao.csv-00000-of-00001'
+
+###########################
+
+bq \
+--location=southamerica-east1 \
+load \
+--source_format=CSV \
+TCC_Turismo_staging.d_Regiao_Turistica \
+'gs://dados_tcc_facens_sp/output/tabela_d_regiao_turistica.csv-00000-of-00001'
+
+

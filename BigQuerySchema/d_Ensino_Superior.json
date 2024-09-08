@@ -1,0 +1,38 @@
+[
+    {
+      "name": "NO_MUNICIPIO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "NO_CURSO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "NO_CINE_ROTULO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "NO_CINE_AREA_GERAL",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "NO_CINE_AREA_DETALHADA",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "NO_CINE_AREA_ESPECIFICA",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "QT_MAT",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    }
+  ]
+  

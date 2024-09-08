@@ -1,0 +1,20 @@
+[
+    {
+      "name": "NO_MUNICIPIO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "ANO_REF",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "AGUA_POPULACAO_ATEND_QT",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    }
+  ]
+
+
+

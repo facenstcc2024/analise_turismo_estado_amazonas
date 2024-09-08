@@ -1,0 +1,13 @@
+[
+    {
+      "name": "NO_MUNICIPIO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "LEITOS_QT",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    }
+  ]
+  

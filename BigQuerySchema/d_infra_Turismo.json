@@ -1,0 +1,248 @@
+[
+    {
+      "name": "NO_MUNICIPIO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "PROJETOS_MTUR",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "PRINCIPAIS_ATIVIDADES_ECONOMICAS",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "PRINCIPAIS_ATIVIDADES_ECONOMICAS_AGRICULTURA_E_PECUARIA",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "PRINCIPAIS_ATIVIDADES_ECONOMICAS_TURISMO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "PRINCIPAIS_ATIVIDADES_ECONOMICAS_OUTROS",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "PRINCIPAIS_ATIVIDADES_ECONOMICAS_SERVICOS",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "PRINCIPAIS_ATIVIDADES_ECONOMICAS_COMERCIO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "PRINCIPAIS_ATIVIDADES_ECONOMICAS_INDUSTRIA_DE_BASE",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "FUNDO_MUNICIPAL_TURISMO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "PLANO_MUNICIPAL_TURISMO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "PLANO_MKT_TURISMO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "PROJETOS_ATIVIDADE_TURISTICA",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "HOSPEDAGEM_QT",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "LEITOS_QT",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "LOCADORAS_VEICULOS",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "AGENCIAS_BANCARIAS_QT",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "AEROPORTO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "TIPOS_TRANSPORTE",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "TIPOS_TRANSPORTE_RODOVIARIO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "TIPOS_TRANSPORTE_AQUAVIARIO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "TIPOS_TRANSPORTE_AEREO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "TIPOS_TRANSPORTE_OUTROS",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "ACESSO_DESTINO_TURISTICO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "ACESSO_DESTINO_TURISTICO_HIDROVIA",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "ACESSO_DESTINO_TURISTICO_RODOVIA",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "ACESSO_DESTINO_TURISTICO_AEROPORTO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "ACESSO_DESTINO_TURISTICO_FERROVIA",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "ACESSO_DESTINO_TURISTICO_OUTROS",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "SITUACAO_SINALIZACAO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "ROTA_TURISTICA",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "INTERLIGACAO_ENTRE_ATRATIVOS",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "SINALIZACAO_ACESSIBILIDADE",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "RESERVA_ESPACO_ACESSIBILIDADE",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "PROFISSIONAIS_ACESSIBILIDADE",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "EMPRESAS_TURISMO_QT",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "TIPOS_PATRIMONIO_NATURAL",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "TIPOS_PATRIMONIO_NATURAL_PARQUES_NATURAIS",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "TIPOS_PATRIMONIO_NATURAL_UNIDADE_DE_CONSERVACAO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "TIPOS_PATRIMONIO_NATURAL_RESERVAS_ECOLOGICAS",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "TIPOS_PATRIMONIO_NATURAL_OUTROS",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "UNIDADES_CONSERVACAO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "TIPOS_PATRIMONIO_CULTURAL",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "PATRIMONIO_CULTURAL_HISTORICO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "PATRIMONIO_CULTURAL_EQUIPAMENTOS",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "PATRIMONIO_CULTURAL_OUTROS",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "BARCOS_TURISMO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "TURISMO_PESCA",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "TURISMO_MERGULHO",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    }
+  ]
+  
