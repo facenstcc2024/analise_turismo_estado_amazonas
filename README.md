@@ -1,9 +1,241 @@
 # analise_turismo_regiao_amazonica
+
+## Table of Contents
+- [1. Introdução](#introdução)
+- [2. Tecnologias Utilizadas](#tecnologias-utilizadas)
+  - [2.1 GCP](#gcp)
+  - [2.2 Google Dataflow](#google-dataflow)
+  - [2.3 Google Cloud Storage](#google-cloud-storage)
+  - [2.4 Google Big Query](#google-big-query)
+  - [2.5 Cloud Functions](#cloud-functions)
+  - [2.6 Cloud Scheduler](#cloud-scheduler)
+- [3. Montando o Ambiente no GCP](#montando-o-ambiente-no-gcp)
+  - [3.1 Criando Conta no GCP](#criando-conta-no-gcp)
+    - [3.1.1 Como Executar os Scripts](#como-executar-os-scripts)
+  - [3.2 Criando Buckets no Cloud Storage](#criando-buckets-no-cloud-storage)
+    - [3.2.1 Criando Buckets](#criando-buckets)
+    - [3.2.2 Copiando Arquivos CSV de Input](#copiando-arquivos-csv-de-input)
+  - [3.3 Processando Dados com Google Dataflow](#processando-dados-com-google-dataflow)
+    - [3.3.1 Criando Script Dataflow](#criando-script-dataflow)
+  - [3.4 Criando os Datasets BigQuery](#criando-os-datasets-big-query)
+    - [3.4.1 Criando o Dataset TCC_Turismo_staging e Suas Tabelas](#criando-o-dataset-tcc_turismo_staging-e-suas-tabelas)
+    - [3.4.2 Criando o Dataset TCC_Turismo e Suas Tabelas](#criando-o-dataset-tcc_turismo-e-suas-tabelas)
+    - [3.4.3 Criando as Procedures BigQuery de Merge](#criando-as-procedures-bigquery-de-merge)
+  - [3.5 Criando Cloud Function para Carga e Merge](#criando-cloud-function-para-carga-e-merge)
+    - [3.5.1 Ativando os Serviços Necessários](#ativando-os-serviços-necessários)
+    - [3.5.2 Criando e Fazendo Deploy da Cloud Function](#criando-e-fazendo-deploy-da-cloud-function)
+  - [3.6 Criando Cloud Scheduler para Agendamento](#criando-cloud-scheduler-para-agendamento)
+    - [3.6.1 Criando Conta de Serviço](#criando-conta-de-serviço)
+    - [3.6.2 Criando Role com Permissões para Conta de Serviço](#criando-role-com-permissões-para-conta-de-serviço)
+    - [3.6.3 Adicionando Role de Permissões para Conta de Serviço](#adicionando-role-de-permissões-para-conta-de-serviço)
+    - [3.6.4 Criando Agendamentos Cloud Scheduler](#criando-agendamentos-cloud-scheduler)
+
+## 1. [Introdução](#introdução)
+
+## 2. [Tecnologias Utilizadas](#tecnologias-utilizadas)
+   - [2.1 GCP](#gcp)
+   - [2.2 Google Dataflow](#google-dataflow)
+   - [2.3 Google Cloud Storage](#google-cloud-storage)
+   - [2.4 Google Big Query](#google-big-query)
+   - [2.5 Cloud Functions](#cloud-functions)
+   - [2.6 Cloud Scheduler](#cloud-scheduler)
+
+## 3. [Montando o Ambiente no GCP](#montando-o-ambiente-no-gcp)
+   - [3.1 Criando Conta no GCP](#criando-conta-no-gcp)
+     - [3.1.1 Como Executar os Scripts](#como-executar-os-scripts)
+   - [3.2 Criando Buckets no Cloud Storage](#criando-buckets-no-cloud-storage)
+     - [3.2.1 Criando Buckets](#criando-buckets)
+     - [3.2.2 Copiando Arquivos CSV de Input](#copiando-arquivos-csv-de-input)
+   - [3.3 Processando Dados com Google Dataflow](#processando-dados-com-google-dataflow)
+     - [3.3.1 Criando Script Dataflow](#criando-script-dataflow)
+   - [3.4 Criando os Datasets BigQuery](#criando-os-datasets-big-query)
+     - [3.4.1 Criando o Dataset TCC_Turismo_staging e Suas Tabelas](#criando-o-dataset-tcc_turismo_staging-e-suas-tabelas)
+     - [3.4.2 Criando o Dataset TCC_Turismo e Suas Tabelas](#criando-o-dataset-tcc_turismo-e-suas-tabelas)
+     - [3.4.3 Criando as Procedures BigQuery de Merge](#criando-as-procedures-bigquery-de-merge)
+   - [3.5 Criando Cloud Function para Carga e Merge](#criando-cloud-function-para-carga-e-merge)
+     - [3.5.1 Ativando os Serviços Necessários](#ativando-os-serviços-necessários)
+     - [3.5.2 Criando e Fazendo Deploy da Cloud Function](#criando-e-fazendo-deploy-da-cloud-function)
+   - [3.6 Criando Cloud Scheduler para Agendamento](#criando-cloud-scheduler-para-agendamento)
+     - [3.6.1 Criando Conta de Serviço](#criando-conta-de-serviço)
+     - [3.6.2 Criando Role com Permissões para Conta de Serviço](#criando-role-com-permissões-para-conta-de-serviço)
+     - [3.6.3 Adicionando Role de Permissões para Conta de Serviço](#adicionando-role-de-permissões-para-conta-de-serviço)
+     - [3.6.4 Criando Agendamentos Cloud Scheduler](#criando-agendamentos-cloud-scheduler)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+######################################### antigo ################################
+
+
+
+
+
 repositório destinado ao trabalho de conclusão de curso sobre a análise de dados turísticos na região amazonica
 
 
+############################# DataFlow ############################
 
 
+
+############################ Big Query ############################
+
+--Criando o dataset TCC_Turismo_staging
+
+bq --location=southamerica-east1 mk \
+--default_table_expiration 0 \
+--dataset TCC_Turismo_staging
+
+
+
+criação tabelas via linha de comando cloud shell
+###########################################################
+abrir console gcp
+abrir clod shell
+opções do cloud shell, upload pasta BigQuerySchema_staging
+rodar os comando abaixo
+
+
+
+bq mk --table \
+TCC_Turismo_staging.d_Agua \
+BigQuerySchema_staging/d_Agua.json
+
+
+bq mk --table \
+TCC_Turismo_staging.d_Ensino_Basico \
+BigQuerySchema_staging/d_Ensino_Basico.json
+
+
+bq mk --table \
+TCC_Turismo_staging.d_Ensino_Superior \
+BigQuerySchema_staging/d_Ensino_Superior.json
+
+
+bq mk --table \
+TCC_Turismo_staging.d_Ensino_tecnico \
+BigQuerySchema_staging/d_Ensino_tecnico.json
+
+
+bq mk --table \
+TCC_Turismo_staging.d_infra_Turismo \
+BigQuerySchema_staging/d_infra_Turismo.json
+
+
+bq mk --table \
+TCC_Turismo_staging.d_Localizacao \
+BigQuerySchema_staging/d_Localizacao.json
+
+
+bq mk --table \
+TCC_Turismo_staging.d_Regiao_Turistica \
+BigQuerySchema_staging/d_Regiao_Turistica.json
+
+
+bq mk --table \
+TCC_Turismo_staging.d_saude \
+BigQuerySchema_staging/d_saude.json
+
+
+bq mk --table \
+TCC_Turismo_staging.variavel_dependente_visitantes_tabela_1 \
+BigQuerySchema_staging/variavel_dependente_visitantes_tabela_1.json
+
+
+bq mk --table \
+TCC_Turismo_staging.variavel_dependente_visitantes_tabela_2 \
+BigQuerySchema_staging/variavel_dependente_visitantes_tabela_2.json
+
+
+--Criando o dataset TCC_Turismo
+
+bq --location=southamerica-east1 mk \
+--default_table_expiration 0 \
+--dataset TCC_Turismo
+
+
+
+
+criação tabelas via linha de comando cloud shell
+###########################################################
+abrir console gcp
+abrir clod shell
+opções do cloud shell, upload pasta BigQuerySchema
+rodar os comando abaixo
+
+
+
+________________________________________________
+bq mk --table \
+TCC_Turismo.d_Agua \
+BigQuerySchema/d_Agua.json
+
+______________________________________________
+bq mk --table \
+TCC_Turismo.d_Ensino_Basico \
+BigQuerySchema/d_Ensino_Basico.json
+
+______________________________________________
+
+bq mk --table \
+TCC_Turismo.d_Ensino_Superior \
+BigQuerySchema/d_Ensino_Superior.json
+
+_____________________________________________
+
+bq mk --table \
+TCC_Turismo.d_Ensino_tecnico \
+BigQuerySchema/d_Ensino_tecnico.json
+
+____________________________________________
+bq mk --table \
+TCC_Turismo.d_infra_Turismo \
+BigQuerySchema/d_infra_Turismo.json
+
+____________________________________________
+bq mk --table \
+TCC_Turismo.d_Localizacao \
+BigQuerySchema/d_Localizacao.json
+
+
+bq mk --table \
+TCC_Turismo.d_Regiao_Turistica \
+BigQuerySchema/d_Regiao_Turistica.json
+
+
+bq mk --table \
+TCC_Turismo.d_saude \
+BigQuerySchema/d_saude.json
+
+
+bq mk --table \
+TCC_Turismo.variavel_dependente_visitantes_tabela_1 \
+BigQuerySchema/variavel_dependente_visitantes_tabela_1.json
+
+
+bq mk --table \
+TCC_Turismo.variavel_dependente_visitantes_tabela_2 \
+BigQuerySchema/variavel_dependente_visitantes_tabela_2.json
 
 
 ############################### cloud function ###########################################
