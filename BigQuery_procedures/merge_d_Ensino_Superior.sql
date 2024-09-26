@@ -1,0 +1,55 @@
+CREATE OR REPLACE PROCEDURE `tccfacens2024-435322.TCC_Turismo.merge_d_Ensino_Superior`()
+BEGIN
+
+
+MERGE `tccfacens2024-435322.TCC_Turismo.d_Ensino_Superior` tgt
+USING (
+  SELECT 
+    NO_MUNICIPIO,
+    NO_CURSO,
+    NO_CINE_ROTULO,
+    NO_CINE_AREA_GERAL,
+    NO_CINE_AREA_DETALHADA,
+    NO_CINE_AREA_ESPECIFICA,
+  cast(QT_MAT as Integer) as QT_MAT
+  FROM `tccfacens2024-435322.TCC_Turismo_staging.d_Ensino_Superior` ) as src
+ON
+  tgt.NO_MUNICIPIO = src.NO_MUNICIPIO	and
+  tgt.NO_CURSO= src.NO_CURSO	and
+  tgt.NO_CINE_ROTULO = src.NO_CINE_ROTULO and	
+  tgt.NO_CINE_AREA_GERAL = src.NO_CINE_AREA_GERAL and	
+  tgt.NO_CINE_AREA_DETALHADA = src.NO_CINE_AREA_DETALHADA and	
+  tgt.NO_CINE_AREA_ESPECIFICA = src.NO_CINE_AREA_ESPECIFICA	and
+  tgt.QT_MAT = src.QT_MAT	
+
+WHEN MATCHED THEN
+  UPDATE SET 
+    tgt.NO_MUNICIPIO = src.NO_MUNICIPIO	,
+    tgt.NO_CURSO= src.NO_CURSO	,
+    tgt.NO_CINE_ROTULO = src.NO_CINE_ROTULO	,
+    tgt.NO_CINE_AREA_GERAL = src.NO_CINE_AREA_GERAL	,
+    tgt.NO_CINE_AREA_DETALHADA = src.NO_CINE_AREA_DETALHADA	,
+    tgt.NO_CINE_AREA_ESPECIFICA = src.NO_CINE_AREA_ESPECIFICA	,
+    tgt.QT_MAT = src.QT_MAT	
+  
+WHEN NOT MATCHED BY TARGET THEN
+  INSERT (
+    NO_MUNICIPIO ,
+    NO_CURSO,
+    NO_CINE_ROTULO,
+    NO_CINE_AREA_GERAL,
+    NO_CINE_AREA_DETALHADA,
+    NO_CINE_AREA_ESPECIFICA,
+    QT_MAT  )
+  VALUES (
+    src.NO_MUNICIPIO ,
+    src.NO_CURSO ,
+    src.NO_CINE_ROTULO ,
+    src.NO_CINE_AREA_GERAL ,
+    src.NO_CINE_AREA_DETALHADA ,
+    src.NO_CINE_AREA_ESPECIFICA ,
+    src.QT_MAT 
+    );
+    
+DELETE FROM `tccfacens2024-435322.TCC_Turismo_staging.d_Ensino_Superior` WHERE 1 = 1;
+END;
