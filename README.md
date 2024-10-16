@@ -65,6 +65,11 @@ Integração - Fácil integração com demais serviços do google cloud, como  P
 
 - **Google Cloud Storage**  
 
+O google cloud storage é a solução para armazenamento de dados na nuvem , salvando so dados em servidores externos e distribuidos.
+O serviço é escalavel, com alta disponibilidade e seguro, perfeito para o armazenamento de dados de aplicativos, objeto e dados não estruturados.
+O serviço do google clou storage oferece diferentes classes de armazenamento de dados, com diferentes preços, possibilitando menores
+precos de armazenamento para objetos com pouco acesso.
+
 - **Google Big Query**  
 
 Serviço de  datawarehouse do google, totalmente gerenciada e sem servidor,
@@ -74,7 +79,16 @@ O Big query pode ser facilmente utilizado com diversas outras ferramentas, seja 
 
 - **Cloud Functions**  
 
+O Google Cloud Functions é a solução de computação sem servidor do google, possibilitando o desenvolvimento e execução de código sem provisão de servidor , sendo escalavel e flexivel.
+As cloud functions são orientadas a eventos como requisições HTTP, alterações em bancos de dados, novos arquivos num storage ou mensagens num
+topico de mensageria.
+Com suporte a várias linguagens de programação, fácil integração entre serviçosas cloud functions são ótimas opções para desenvolvimento de aplicações modernas.
+
 - **Cloud Scheduler**  
+
+O Google Cloud Scheduler é a solução para agendamento de tarefas do google.
+Indicado para automação de tarefas, envio de emails, carga e recebimento de dados, backups de dados e bancos de dados entre outros.
+Compativel com a maioria dos serviços google, o serviço do google cloud scheduler é uma opção fácil para agendamento, automatização e execução .de tarefas
 
 ## Montando o Ambiente no GCP
 
@@ -84,18 +98,58 @@ Você precisará de uma conta no Google Cloud Platform.
 
 ### Como Executar os Scripts
 
-Siga as instruções abaixo para executar os scripts.
+Para a criação de todos os elementos utilizados no projetos, foram utilizados scripts, possibilidtando a fácil replicação e possivel automatização da criação dos elementos.
+As variaveis abaixo contem informações como id_projeto, região zone, nome do storage, entre outras.
+para reproduzir o experimento basta substituir os valores das variaveis abaixo pelo sid do seu projeto as demais informações, e copiar e colar as variaveis na interface de linha de comandos do GCP, após isso basta seguir as instruções para cada tipo de elemento criado.
+Caso o cloud shell fique desconecte for inatividade , é necessários criar novamente as variveis acima
+
+```bash
+PROJECT_ID=tccfacens2024-435322
+REGION=southamerica-east1
+ZONE=southamerica-east1-a
+GCP_BUCKET_TCC_FACENS=dados_tcc_facens_final
+GCP_BUCKET_TCC_FACENS_SP=dados_tcc_facens_sp_final
+INPUT_FOLDER=inputs
+OUTPUT_FOLDER=output
+GS_PREFIX=gs://
+
+
+DATASET_TCC_STAGING=TCC_Turismo_staging
+DATASET_TCC=TCC_Turismo
+
+
+PROJECT_ID=tccfacens2024-435322
+REGION=southamerica-east1
+
+
+
+SERVICE_ACCOUNT_NAME=account-tcc-facens-scheduler
+SERVICE_ACCOUNT_DESCRIPTION=scheduler_tcc_facens_service_account
+```
 
 ## Criando Buckets no Cloud Storage
 
 ### Criando Buckets
 
-Crie os buckets no Google Cloud Storage.
+```bash
+gcloud storage buckets create gs://$GCP_BUCKET_TCC_FACENS --default-storage-class=nearline --location=$REGION
+
+gcloud storage buckets create gs://$GCP_BUCKET_TCC_FACENS_SP --default-storage-class=nearline --location=$REGION
+```
 
 ### Copiando Arquivos CSV de Input
 
-Copie os arquivos CSV necessários para o processamento.
+faça o file upload da pasta inputs para console GCP 
 
+```bash
+unzip inputs/inputs.zip -d inputs
+```
+
+```bash
+TARGET=$INPUT_FOLDER
+BUCKET_PATH=$GCP_BUCKET_TCC_FACENS_SP/$INPUT_FOLDER
+gsutil cp -r $TARGET gs://$BUCKET_PATH
+```
 ## Processando Dados com Google Dataflow
 
 ### Criando Script Dataflow
@@ -106,15 +160,15 @@ Crie o script de processamento utilizando Google Dataflow.
 
 
 ```bash
-bq --location=southamerica-east1 mk \
+bq --location=$REGION mk \
 --default_table_expiration 0 \
---dataset TCC_Turismo_staging
+--dataset $DATASET_TCC_STAGING
 ```
 
-```
-bq --location=southamerica-east1 mk \
+```bash
+bq --location=$REGION mk \
 --default_table_expiration 0 \
---dataset TCC_Turismo
+--dataset $DATASET_TCC
 ```
 
 
@@ -126,74 +180,62 @@ abrir clod shell
 opções do cloud shell, upload pasta BigQuerySchema_staging
 rodar os comando abaixo
 
-```
+```bash
 bq mk --table \
-TCC_Turismo_staging.d_Agua \
+$DATASET_TCC_STAGING.d_Agua \
 BigQuerySchema_staging/d_Agua.json
-```
+```bash
 
-
-```
+```bash
 bq mk --table \
-TCC_Turismo_staging.d_Ensino_Basico \
+$DATASET_TCC_STAGING.d_Ensino_Basico \
 BigQuerySchema_staging/d_Ensino_Basico.json
-```
+```bash
 
-
-```
+```bash
 bq mk --table \
-TCC_Turismo_staging.d_Ensino_Superior \
+$DATASET_TCC_STAGING.d_Ensino_Superior \
 BigQuerySchema_staging/d_Ensino_Superior.json
+```bash
 
-```
-
-```
+```bash
 bq mk --table \
-TCC_Turismo_staging.d_Ensino_tecnico \
+$DATASET_TCC_STAGING.d_Ensino_tecnico \
 BigQuerySchema_staging/d_Ensino_tecnico.json
-```
+```bash
 
-
-```
+```bash
 bq mk --table \
-TCC_Turismo_staging.d_infra_Turismo \
+$DATASET_TCC_STAGING.d_infra_Turismo \
 BigQuerySchema_staging/d_infra_Turismo.json
 ```
-
-
-```
+```bash
 bq mk --table \
-TCC_Turismo_staging.d_Localizacao \
+$DATASET_TCC_STAGING.d_Localizacao \
 BigQuerySchema_staging/d_Localizacao.json
 ```
 
-
-```
+```bash
 bq mk --table \
-TCC_Turismo_staging.d_Regiao_Turistica \
+$DATASET_TCC_STAGING.d_Regiao_Turistica \
 BigQuerySchema_staging/d_Regiao_Turistica.json
-```
 
-
-```
+____________________________________________
 bq mk --table \
-TCC_Turismo_staging.d_saude \
+$DATASET_TCC_STAGING.d_saude \
 BigQuerySchema_staging/d_saude.json
 ```
 
-
-```
+```bash
 bq mk --table \
-TCC_Turismo_staging.variavel_dependente_visitantes_tabela_1 \
+$DATASET_TCC_STAGING.variavel_dependente_visitantes_tabela_1 \
 BigQuerySchema_staging/variavel_dependente_visitantes_tabela_1.json
 ```
 
-
-```
+```bash
 bq mk --table \
-TCC_Turismo_staging.variavel_dependente_visitantes_tabela_2 \
+$DATASET_TCC_STAGING.variavel_dependente_visitantes_tabela_2 \
 BigQuerySchema_staging/variavel_dependente_visitantes_tabela_2.json
-
 ```
 
 ### Criando o Dataset TCC_Turismo e Suas Tabelas
@@ -203,73 +245,65 @@ abrir clod shell
 opções do cloud shell, upload pasta BigQuerySchema
 rodar os comando abaixo
 
-```
+```bash
 bq mk --table \
-TCC_Turismo.d_Agua \
+$DATASET_TCC.d_Agua \
 BigQuerySchema/d_Agua.json
 ```
 
-```
+```bash
 bq mk --table \
-TCC_Turismo.d_Ensino_Basico \
+$DATASET_TCC.d_Ensino_Basico \
 BigQuerySchema/d_Ensino_Basico.json
 ```
 
-
-
-```
+```bash
 bq mk --table \
-TCC_Turismo.d_Ensino_Superior \
+$DATASET_TCC.d_Ensino_Superior \
 BigQuerySchema/d_Ensino_Superior.json
 ```
 
-
-
-```
+```bash
 bq mk --table \
-TCC_Turismo.d_Ensino_tecnico \
+$DATASET_TCC.d_Ensino_tecnico \
 BigQuerySchema/d_Ensino_tecnico.json
 ```
 
-
-```
+```bash
 bq mk --table \
-TCC_Turismo.d_infra_Turismo \
+$DATASET_TCC.d_infra_Turismo \
 BigQuerySchema/d_infra_Turismo.json
 ```
 
-```
+```bash
 bq mk --table \
-TCC_Turismo.d_Localizacao \
+$DATASET_TCC.d_Localizacao \
 BigQuerySchema/d_Localizacao.json
 ```
 
-
-```
+```bash
 bq mk --table \
-TCC_Turismo.d_Regiao_Turistica \
+$DATASET_TCC.d_Regiao_Turistica \
 BigQuerySchema/d_Regiao_Turistica.json
 ```
 
-
-```
+```bash
 bq mk --table \
-TCC_Turismo.d_saude \
+$DATASET_TCC.d_saude \
 BigQuerySchema/d_saude.json
 ```
 
-
-```
+```bash
 bq mk --table \
-TCC_Turismo.variavel_dependente_visitantes_tabela_1 \
+$DATASET_TCC.variavel_dependente_visitantes_tabela_1 \
 BigQuerySchema/variavel_dependente_visitantes_tabela_1.json
 ```
 
-
-```
+```bash
 bq mk --table \
-TCC_Turismo.variavel_dependente_visitantes_tabela_2 \
+$DATASET_TCC.variavel_dependente_visitantes_tabela_2 \
 BigQuerySchema/variavel_dependente_visitantes_tabela_2.json
+
 ```
 
 ### Criando as Procedures BigQuery de Merge
@@ -278,665 +312,30 @@ Apos Abrir o Big Query, no menu vertical a esquerdam clique na primeira opção 
 Na aba de consulta SQL executar cada bloco de codigo abaixo,
 para criar as procedures de carga e tratamento de dados das tabelas intermediarias para as tabelas finais
 
-#####################
+Faça upload da pasta BigQuery_procedures para o cloud shell do GCP.
+Digite os comando abaixo, certifiquesse de estar no diretório home do cloud shell, na duvida
+digite comando cd ~ , para voltar ao diretorio home .
 
+
+```bash
+bq query --use_legacy_sql=false < BigQuery_procedures/merge_d_Agua.sql
+
+bq query --use_legacy_sql=false < BigQuery_procedures/merge_d_Ensino_Basico.sql
+
+bq query --use_legacy_sql=false < BigQuery_procedures/merge_d_Ensino_Tecnico.sql
+
+bq query --use_legacy_sql=false < BigQuery_procedures/merge_d_infra_Turismo.sql
+
+bq query --use_legacy_sql=false < BigQuery_procedures/merge_d_Localizacao.sql
+
+bq query --use_legacy_sql=false < BigQuery_procedures/merge_d_Regiao_Turistica.sql
+
+bq query --use_legacy_sql=false < BigQuery_procedures/merge_d_saude.sql
+
+bq query --use_legacy_sql=false < BigQuery_procedures/merge_variavel_dependente_visitantes_tabela_1.sql
+
+bq query --use_legacy_sql=false < BigQuery_procedures/merge_variavel_dependente_visitantes_tabela_2.sql
 ```
-CREATE OR REPLACE PROCEDURE `tccfacens2024.TCC_Turismo.merge_d_Agua`()
-BEGIN
-
-
-MERGE `tccfacens2024.TCC_Turismo.d_Agua` tgt
-USING (SELECT NO_MUNICIPIO,
-cast(ANO_REF as Integer) as ANO_REF,
-cast(AGUA_POPULACAO_ATEND_QT as Integer) as AGUA_POPULACAO_ATEND_QT 
-FROM `tccfacens2024.TCC_Turismo_staging.d_Agua` ) as src
-ON
-  tgt.NO_MUNICIPIO  = src.NO_MUNICIPIO and 
-  tgt.ANO_REF  = src.ANO_REF and 
-  tgt.AGUA_POPULACAO_ATEND_QT  = src.AGUA_POPULACAO_ATEND_QT 
-
-WHEN MATCHED THEN
-  UPDATE SET 
-    tgt.NO_MUNICIPIO  = src.NO_MUNICIPIO,
-    tgt.ANO_REF  = src.ANO_REF,
-    tgt.AGUA_POPULACAO_ATEND_QT  = src.AGUA_POPULACAO_ATEND_QT 
-  
-WHEN NOT MATCHED BY TARGET THEN
-  INSERT (
-    NO_MUNICIPIO ,
-    ANO_REF ,
-    AGUA_POPULACAO_ATEND_QT  )
-  VALUES (
-    src.NO_MUNICIPIO ,
-    src.ANO_REF ,
-    src.AGUA_POPULACAO_ATEND_QT 
-    );
-    
-DELETE FROM `tccfacens2024.TCC_Turismo_staging.d_Agua` WHERE 1 = 1 ;
-END;
-```
-
-
-
-#############################
-
-
-
-```
-CREATE OR REPLACE PROCEDURE `tccfacens2024.TCC_Turismo.merge_d_Ensino_Basico`()
-BEGIN
-
-
-MERGE `tccfacens2024.TCC_Turismo.d_Ensino_Basico` tgt
-USING (SELECT NO_MUNICIPIO,
-cast(QT_MAT_BAS as Integer) as QT_MAT_BAS
-FROM `tccfacens2024.TCC_Turismo_staging.d_Ensino_Basico` ) as src
-ON
-  tgt.NO_MUNICIPIO  = src.NO_MUNICIPIO and 
-  tgt.QT_MAT_BAS  = src.QT_MAT_BAS 
-
-WHEN MATCHED THEN
-  UPDATE SET 
-    tgt.NO_MUNICIPIO  = src.NO_MUNICIPIO,
-    tgt.QT_MAT_BAS  = src.QT_MAT_BAS
-  
-WHEN NOT MATCHED BY TARGET THEN
-  INSERT (
-    NO_MUNICIPIO ,
-    QT_MAT_BAS  )
-  VALUES (
-    src.NO_MUNICIPIO ,
-    src.QT_MAT_BAS 
-    );
-    
-DELETE FROM `tccfacens2024.TCC_Turismo_staging.d_Ensino_Basico`  WHERE 1 = 1;
-END;
-
-```
-
-#################################
-
-```
-CREATE OR REPLACE PROCEDURE `tccfacens2024.TCC_Turismo.merge_d_Ensino_Superior`()
-BEGIN
-
-
-MERGE `tccfacens2024.TCC_Turismo.d_Ensino_Superior` tgt
-USING (
-  SELECT 
-    NO_MUNICIPIO,
-    NO_CURSO,
-    NO_CINE_ROTULO,
-    NO_CINE_AREA_GERAL,
-    NO_CINE_AREA_DETALHADA,
-    NO_CINE_AREA_ESPECIFICA,
-  cast(QT_MAT as Integer) as QT_MAT
-  FROM `tccfacens2024.TCC_Turismo_staging.d_Ensino_Superior` ) as src
-ON
-  tgt.NO_MUNICIPIO = src.NO_MUNICIPIO	and
-  tgt.NO_CURSO= src.NO_CURSO	and
-  tgt.NO_CINE_ROTULO = src.NO_CINE_ROTULO and	
-  tgt.NO_CINE_AREA_GERAL = src.NO_CINE_AREA_GERAL and	
-  tgt.NO_CINE_AREA_DETALHADA = src.NO_CINE_AREA_DETALHADA and	
-  tgt.NO_CINE_AREA_ESPECIFICA = src.NO_CINE_AREA_ESPECIFICA	and
-  tgt.QT_MAT = src.QT_MAT	
-
-WHEN MATCHED THEN
-  UPDATE SET 
-    tgt.NO_MUNICIPIO = src.NO_MUNICIPIO	,
-    tgt.NO_CURSO= src.NO_CURSO	,
-    tgt.NO_CINE_ROTULO = src.NO_CINE_ROTULO	,
-    tgt.NO_CINE_AREA_GERAL = src.NO_CINE_AREA_GERAL	,
-    tgt.NO_CINE_AREA_DETALHADA = src.NO_CINE_AREA_DETALHADA	,
-    tgt.NO_CINE_AREA_ESPECIFICA = src.NO_CINE_AREA_ESPECIFICA	,
-    tgt.QT_MAT = src.QT_MAT	
-  
-WHEN NOT MATCHED BY TARGET THEN
-  INSERT (
-    NO_MUNICIPIO ,
-    NO_CURSO,
-    NO_CINE_ROTULO,
-    NO_CINE_AREA_GERAL,
-    NO_CINE_AREA_DETALHADA,
-    NO_CINE_AREA_ESPECIFICA,
-    QT_MAT  )
-  VALUES (
-    src.NO_MUNICIPIO ,
-    src.NO_CURSO ,
-    src.NO_CINE_ROTULO ,
-    src.NO_CINE_AREA_GERAL ,
-    src.NO_CINE_AREA_DETALHADA ,
-    src.NO_CINE_AREA_ESPECIFICA ,
-    src.QT_MAT 
-    );
-    
-DELETE FROM `tccfacens2024.TCC_Turismo_staging.d_Ensino_Superior` WHERE 1 = 1;
-END;
-```
-
-############################################
-
-
-```
-CREATE OR REPLACE PROCEDURE `tccfacens2024.TCC_Turismo.merge_d_Ensino_Tecnico`()
-BEGIN
-
-
-MERGE `tccfacens2024.TCC_Turismo.d_Ensino_tecnico` tgt
-USING (
-  SELECT 
-    NO_MUNICIPIO,
-    NO_AREA_CURSO_PROFISSIONAL,
-    NO_CURSO_EDUC_PROFISSIONAL,
-  cast(QT_MAT_CURSO_TEC as Integer) as QT_MAT_CURSO_TEC
-  FROM `tccfacens2024.TCC_Turismo_staging.d_Ensino_tecnico` ) as src
-ON
-  tgt.NO_MUNICIPIO = src.NO_MUNICIPIO	and
-  tgt.NO_AREA_CURSO_PROFISSIONAL= src.NO_AREA_CURSO_PROFISSIONAL	and
-  tgt.NO_CURSO_EDUC_PROFISSIONAL = src.NO_CURSO_EDUC_PROFISSIONAL and	
-  tgt.QT_MAT_CURSO_TEC = src.QT_MAT_CURSO_TEC 
-
-WHEN MATCHED THEN
-  UPDATE SET 
-    tgt.NO_MUNICIPIO = src.NO_MUNICIPIO	,
-    tgt.NO_AREA_CURSO_PROFISSIONAL= src.NO_AREA_CURSO_PROFISSIONAL	,
-    tgt.NO_CURSO_EDUC_PROFISSIONAL = src.NO_CURSO_EDUC_PROFISSIONAL	,
-    tgt.QT_MAT_CURSO_TEC = src.QT_MAT_CURSO_TEC	
-  
-WHEN NOT MATCHED BY TARGET THEN
-  INSERT (
-    NO_MUNICIPIO ,
-    NO_AREA_CURSO_PROFISSIONAL,
-    NO_CURSO_EDUC_PROFISSIONAL,
-    QT_MAT_CURSO_TEC)
-  VALUES (
-    src.NO_MUNICIPIO ,
-    src.NO_AREA_CURSO_PROFISSIONAL ,
-    src.NO_CURSO_EDUC_PROFISSIONAL ,
-    src.QT_MAT_CURSO_TEC 
-    );
-    
-DELETE FROM `tccfacens2024.TCC_Turismo_staging.d_Ensino_tecnico` WHERE 1 = 1;
-END;
-
-```
-
-
-#############################################
-
-```
-CREATE OR REPLACE PROCEDURE `tccfacens2024.TCC_Turismo.merge_d_Localizacao`()
-BEGIN
-
-
-MERGE `tccfacens2024.TCC_Turismo.d_Localizacao` tgt
-USING (
-  select 
-    NO_MUNICIPIO,
-    cast(ANO_REF as integer) as ANO_REF,
-    UF,
-    ESTADO,
-    REGIAO,
-    MICRORREGIAO,
-    cast(replace(POP_TOTAL,'.','') as integer) as POP_TOTAL,
-    cast(replace(POP_URB,'.','') as integer) as POP_URB ,
-    cast(FAIXA_POP as integer) as FAIXA_POP, 
-    DESC_FAIXA,
-    cast(replace(AREA_KM2,'.','') as integer) as AREA_KM2
-  from `TCC_Turismo_staging.d_Localizacao`
- ) as src
-ON
-  tgt.NO_MUNICIPIO = src.NO_MUNICIPIO	and 
-  tgt.ANO_REF = src.ANO_REF	and
-  tgt.UF = src.UF and	
-  tgt.ESTADO = src.ESTADO and
-  tgt.REGIAO = src.REGIAO	and
-  tgt.MICRORREGIAO = src.MICRORREGIAO	and
-  tgt.POP_TOTAL = src.POP_TOTAL and	
-  tgt.POP_URB = src.POP_URB and
-  tgt.FAIXA_POP = src.FAIXA_POP	and
-  tgt.DESC_FAIXA = src.DESC_FAIXA	and
-  tgt.AREA_KM2 = src.AREA_KM2 
-
-WHEN MATCHED THEN
-  UPDATE SET 
-    tgt.NO_MUNICIPIO = src.NO_MUNICIPIO	,
-    tgt.ANO_REF = src.ANO_REF	,
-    tgt.UF = src.UF	,
-    tgt.ESTADO = src.ESTADO, 
-    tgt.REGIAO = src.REGIAO	,
-    tgt.MICRORREGIAO = src.MICRORREGIAO	,
-    tgt.POP_TOTAL = src.POP_TOTAL	,
-    tgt.POP_URB = src.POP_URB, 
-    tgt.FAIXA_POP = src.FAIXA_POP	,
-    tgt.DESC_FAIXA = src.DESC_FAIXA	,
-    tgt.AREA_KM2 = src.AREA_KM2	
-
-  
-WHEN NOT MATCHED BY TARGET THEN
-  INSERT (
-    NO_MUNICIPIO ,
-    ANO_REF,
-    UF,
-    ESTADO,
-    REGIAO,
-    MICRORREGIAO,
-    POP_TOTAL,
-    POP_URB,
-    FAIXA_POP,
-    DESC_FAIXA,
-    AREA_KM2
-    )
-  VALUES (
-    src.NO_MUNICIPIO ,
-    src.ANO_REF ,
-    src.UF ,
-    src.ESTADO ,
-    src.REGIAO ,
-    src.MICRORREGIAO ,
-    src.POP_TOTAL ,
-    src.POP_URB ,
-    src.FAIXA_POP ,
-    src.DESC_FAIXA ,   
-    src.AREA_KM2
-    );
-    
-DELETE   from `TCC_Turismo_staging.d_Localizacao` WHERE 1 = 1;
-END;
-```
-
-
-############################################
-
-
-```
-CREATE OR REPLACE PROCEDURE `tccfacens2024.TCC_Turismo.merge_d_Regiao_Turistica`()
-BEGIN
-
-
-MERGE `tccfacens2024.TCC_Turismo.d_Regiao_Turistica` tgt
-USING (SELECT 
-  NO_MUNICIPIO,
-  REGIAO_TURISTICA,
-  CATEGORIA_TURISMO
-FROM `tccfacens2024.TCC_Turismo_staging.d_Regiao_Turistica` ) as src
-ON
-  tgt.NO_MUNICIPIO  = src.NO_MUNICIPIO and 
-  tgt.REGIAO_TURISTICA  = src.REGIAO_TURISTICA and 
-  tgt.CATEGORIA_TURISMO  = src.CATEGORIA_TURISMO 
-
-WHEN MATCHED THEN
-  UPDATE SET 
-    tgt.NO_MUNICIPIO  = src.NO_MUNICIPIO,
-    tgt.REGIAO_TURISTICA  = src.REGIAO_TURISTICA,
-    tgt.CATEGORIA_TURISMO  = src.CATEGORIA_TURISMO 
-  
-WHEN NOT MATCHED BY TARGET THEN
-  INSERT (
-    NO_MUNICIPIO ,
-    REGIAO_TURISTICA ,
-    CATEGORIA_TURISMO  )
-  VALUES (
-    src.NO_MUNICIPIO ,
-    src.REGIAO_TURISTICA ,
-    src.CATEGORIA_TURISMO 
-    );
-    
-DELETE FROM `tccfacens2024.TCC_Turismo_staging.d_Regiao_Turistica` WHERE 1 = 1;
-END;
-
-```
-
-################################################
-
-```
-
-CREATE OR REPLACE PROCEDURE `tccfacens2024.TCC_Turismo.merge_d_infra_Turismo`()
-BEGIN
-  MERGE `tccfacens2024.TCC_Turismo.d_infra_Turismo` tgt
-  USING (
-    SELECT
-      NO_MUNICIPIO,
-      PROJETOS_MTUR,
-      PRINCIPAIS_ATIVIDADES_ECONOMICAS,
-      PRINCIPAIS_ATIVIDADES_ECONOMICAS_AGRICULTURA_E_PECUARIA,
-      PRINCIPAIS_ATIVIDADES_ECONOMICAS_TURISMO,
-      PRINCIPAIS_ATIVIDADES_ECONOMICAS_OUTROS,
-      PRINCIPAIS_ATIVIDADES_ECONOMICAS_SERVICOS,
-      PRINCIPAIS_ATIVIDADES_ECONOMICAS_COMERCIO,
-      PRINCIPAIS_ATIVIDADES_ECONOMICAS_INDUSTRIA_DE_BASE,
-      FUNDO_MUNICIPAL_TURISMO,
-      PLANO_MUNICIPAL_TURISMO,
-      PLANO_MKT_TURISMO,
-      PROJETOS_ATIVIDADE_TURISTICA,
-      CAST(HOSPEDAGEM_QT AS INT64) AS HOSPEDAGEM_QT,
-      CAST(LEITOS_QT AS INT64) AS LEITOS_QT,
-      LOCADORAS_VEICULOS,
-      CAST(AGENCIAS_BANCARIAS_QT AS INT64) AS AGENCIAS_BANCARIAS_QT,
-      AEROPORTO,
-      TIPOS_TRANSPORTE,
-      TIPOS_TRANSPORTE_RODOVIARIO,
-      TIPOS_TRANSPORTE_AQUAVIARIO,
-      TIPOS_TRANSPORTE_AEREO,
-      TIPOS_TRANSPORTE_OUTROS,
-      ACESSO_DESTINO_TURISTICO,
-      ACESSO_DESTINO_TURISTICO_HIDROVIA,
-      ACESSO_DESTINO_TURISTICO_RODOVIA,
-      ACESSO_DESTINO_TURISTICO_AEROPORTO,
-      ACESSO_DESTINO_TURISTICO_FERROVIA,
-      ACESSO_DESTINO_TURISTICO_OUTROS,
-      SITUACAO_SINALIZACAO,
-      ROTA_TURISTICA,
-      INTERLIGACAO_ENTRE_ATRATIVOS,
-      SINALIZACAO_ACESSIBILIDADE,
-      RESERVA_ESPACO_ACESSIBILIDADE,
-      PROFISSIONAIS_ACESSIBILIDADE,
-      CAST(EMPRESAS_TURISMO_QT AS INT64) AS EMPRESAS_TURISMO_QT,
-      TIPOS_PATRIMONIO_NATURAL,
-      TIPOS_PATRIMONIO_NATURAL_PARQUES_NATURAIS,
-      TIPOS_PATRIMONIO_NATURAL_UNIDADE_DE_CONSERVACAO,
-      TIPOS_PATRIMONIO_NATURAL_RESERVAS_ECOLOGICAS,
-      TIPOS_PATRIMONIO_NATURAL_OUTROS,
-      UNIDADES_CONSERVACAO,
-      TIPOS_PATRIMONIO_CULTURAL,
-      PATRIMONIO_CULTURAL_HISTORICO,
-      PATRIMONIO_CULTURAL_EQUIPAMENTOS,
-      PATRIMONIO_CULTURAL_OUTROS,
-      BARCOS_TURISMO,
-      TURISMO_PESCA,
-      TURISMO_MERGULHO
-    FROM `tccfacens2024.TCC_Turismo_staging.d_infra_Turismo`
-  ) AS src
-  ON tgt.NO_MUNICIPIO = src.NO_MUNICIPIO
-
-  WHEN MATCHED THEN
-    UPDATE SET
-      tgt.NO_MUNICIPIO = src.NO_MUNICIPIO,
-      tgt.PROJETOS_MTUR = src.PROJETOS_MTUR,
-      tgt.PRINCIPAIS_ATIVIDADES_ECONOMICAS = src.PRINCIPAIS_ATIVIDADES_ECONOMICAS,
-      tgt.PRINCIPAIS_ATIVIDADES_ECONOMICAS_AGRICULTURA_E_PECUARIA = src.PRINCIPAIS_ATIVIDADES_ECONOMICAS_AGRICULTURA_E_PECUARIA,
-      tgt.PRINCIPAIS_ATIVIDADES_ECONOMICAS_TURISMO = src.PRINCIPAIS_ATIVIDADES_ECONOMICAS_TURISMO,
-      tgt.PRINCIPAIS_ATIVIDADES_ECONOMICAS_OUTROS = src.PRINCIPAIS_ATIVIDADES_ECONOMICAS_OUTROS,
-      tgt.PRINCIPAIS_ATIVIDADES_ECONOMICAS_SERVICOS = src.PRINCIPAIS_ATIVIDADES_ECONOMICAS_SERVICOS,
-      tgt.PRINCIPAIS_ATIVIDADES_ECONOMICAS_COMERCIO = src.PRINCIPAIS_ATIVIDADES_ECONOMICAS_COMERCIO,
-      tgt.PRINCIPAIS_ATIVIDADES_ECONOMICAS_INDUSTRIA_DE_BASE = src.PRINCIPAIS_ATIVIDADES_ECONOMICAS_INDUSTRIA_DE_BASE,
-      tgt.FUNDO_MUNICIPAL_TURISMO = src.FUNDO_MUNICIPAL_TURISMO,
-      tgt.PLANO_MUNICIPAL_TURISMO = src.PLANO_MUNICIPAL_TURISMO,
-      tgt.PLANO_MKT_TURISMO = src.PLANO_MKT_TURISMO,
-      tgt.PROJETOS_ATIVIDADE_TURISTICA = src.PROJETOS_ATIVIDADE_TURISTICA,
-      tgt.HOSPEDAGEM_QT = src.HOSPEDAGEM_QT,
-      tgt.LEITOS_QT = src.LEITOS_QT,
-      tgt.LOCADORAS_VEICULOS = src.LOCADORAS_VEICULOS,
-      tgt.AGENCIAS_BANCARIAS_QT = src.AGENCIAS_BANCARIAS_QT,
-      tgt.AEROPORTO = src.AEROPORTO,
-      tgt.TIPOS_TRANSPORTE = src.TIPOS_TRANSPORTE,
-      tgt.TIPOS_TRANSPORTE_RODOVIARIO = src.TIPOS_TRANSPORTE_RODOVIARIO,
-      tgt.TIPOS_TRANSPORTE_AQUAVIARIO = src.TIPOS_TRANSPORTE_AQUAVIARIO,
-      tgt.TIPOS_TRANSPORTE_AEREO = src.TIPOS_TRANSPORTE_AEREO,
-      tgt.TIPOS_TRANSPORTE_OUTROS = src.TIPOS_TRANSPORTE_OUTROS,
-      tgt.ACESSO_DESTINO_TURISTICO = src.ACESSO_DESTINO_TURISTICO,
-      tgt.ACESSO_DESTINO_TURISTICO_HIDROVIA = src.ACESSO_DESTINO_TURISTICO_HIDROVIA,
-      tgt.ACESSO_DESTINO_TURISTICO_RODOVIA = src.ACESSO_DESTINO_TURISTICO_RODOVIA,
-      tgt.ACESSO_DESTINO_TURISTICO_AEROPORTO = src.ACESSO_DESTINO_TURISTICO_AEROPORTO,
-      tgt.ACESSO_DESTINO_TURISTICO_FERROVIA = src.ACESSO_DESTINO_TURISTICO_FERROVIA,
-      tgt.ACESSO_DESTINO_TURISTICO_OUTROS = src.ACESSO_DESTINO_TURISTICO_OUTROS,
-      tgt.SITUACAO_SINALIZACAO = src.SITUACAO_SINALIZACAO,
-      tgt.ROTA_TURISTICA = src.ROTA_TURISTICA,
-      tgt.INTERLIGACAO_ENTRE_ATRATIVOS = src.INTERLIGACAO_ENTRE_ATRATIVOS,
-      tgt.SINALIZACAO_ACESSIBILIDADE = src.SINALIZACAO_ACESSIBILIDADE,
-      tgt.RESERVA_ESPACO_ACESSIBILIDADE = src.RESERVA_ESPACO_ACESSIBILIDADE,
-      tgt.PROFISSIONAIS_ACESSIBILIDADE = src.PROFISSIONAIS_ACESSIBILIDADE,
-      tgt.EMPRESAS_TURISMO_QT = src.EMPRESAS_TURISMO_QT,
-      tgt.TIPOS_PATRIMONIO_NATURAL = src.TIPOS_PATRIMONIO_NATURAL,
-      tgt.TIPOS_PATRIMONIO_NATURAL_PARQUES_NATURAIS = src.TIPOS_PATRIMONIO_NATURAL_PARQUES_NATURAIS,
-      tgt.TIPOS_PATRIMONIO_NATURAL_UNIDADE_DE_CONSERVACAO = src.TIPOS_PATRIMONIO_NATURAL_UNIDADE_DE_CONSERVACAO,
-      tgt.TIPOS_PATRIMONIO_NATURAL_RESERVAS_ECOLOGICAS = src.TIPOS_PATRIMONIO_NATURAL_RESERVAS_ECOLOGICAS,
-      tgt.TIPOS_PATRIMONIO_NATURAL_OUTROS = src.TIPOS_PATRIMONIO_NATURAL_OUTROS,
-      tgt.UNIDADES_CONSERVACAO = src.UNIDADES_CONSERVACAO,
-      tgt.TIPOS_PATRIMONIO_CULTURAL = src.TIPOS_PATRIMONIO_CULTURAL,
-      tgt.PATRIMONIO_CULTURAL_HISTORICO = src.PATRIMONIO_CULTURAL_HISTORICO,
-      tgt.PATRIMONIO_CULTURAL_EQUIPAMENTOS = src.PATRIMONIO_CULTURAL_EQUIPAMENTOS,
-      tgt.PATRIMONIO_CULTURAL_OUTROS = src.PATRIMONIO_CULTURAL_OUTROS,
-      tgt.BARCOS_TURISMO = src.BARCOS_TURISMO,
-      tgt.TURISMO_PESCA = src.TURISMO_PESCA
-
-,
-      tgt.TURISMO_MERGULHO = src.TURISMO_MERGULHO
-
-  WHEN NOT MATCHED BY TARGET THEN
-    INSERT (
-      NO_MUNICIPIO,
-      PROJETOS_MTUR,
-      PRINCIPAIS_ATIVIDADES_ECONOMICAS,
-      PRINCIPAIS_ATIVIDADES_ECONOMICAS_AGRICULTURA_E_PECUARIA,
-      PRINCIPAIS_ATIVIDADES_ECONOMICAS_TURISMO,
-      PRINCIPAIS_ATIVIDADES_ECONOMICAS_OUTROS,
-      PRINCIPAIS_ATIVIDADES_ECONOMICAS_SERVICOS,
-      PRINCIPAIS_ATIVIDADES_ECONOMICAS_COMERCIO,
-      PRINCIPAIS_ATIVIDADES_ECONOMICAS_INDUSTRIA_DE_BASE,
-      FUNDO_MUNICIPAL_TURISMO,
-      PLANO_MUNICIPAL_TURISMO,
-      PLANO_MKT_TURISMO,
-      PROJETOS_ATIVIDADE_TURISTICA,
-      HOSPEDAGEM_QT,
-      LEITOS_QT,
-      LOCADORAS_VEICULOS,
-      AGENCIAS_BANCARIAS_QT,
-      AEROPORTO,
-      TIPOS_TRANSPORTE,
-      TIPOS_TRANSPORTE_RODOVIARIO,
-      TIPOS_TRANSPORTE_AQUAVIARIO,
-      TIPOS_TRANSPORTE_AEREO,
-      TIPOS_TRANSPORTE_OUTROS,
-      ACESSO_DESTINO_TURISTICO,
-      ACESSO_DESTINO_TURISTICO_HIDROVIA,
-      ACESSO_DESTINO_TURISTICO_RODOVIA,
-      ACESSO_DESTINO_TURISTICO_AEROPORTO,
-      ACESSO_DESTINO_TURISTICO_FERROVIA,
-      ACESSO_DESTINO_TURISTICO_OUTROS,
-      SITUACAO_SINALIZACAO,
-      ROTA_TURISTICA,
-      INTERLIGACAO_ENTRE_ATRATIVOS,
-      SINALIZACAO_ACESSIBILIDADE,
-      RESERVA_ESPACO_ACESSIBILIDADE,
-      PROFISSIONAIS_ACESSIBILIDADE,
-      EMPRESAS_TURISMO_QT,
-      TIPOS_PATRIMONIO_NATURAL,
-      TIPOS_PATRIMONIO_NATURAL_PARQUES_NATURAIS,
-      TIPOS_PATRIMONIO_NATURAL_UNIDADE_DE_CONSERVACAO,
-      TIPOS_PATRIMONIO_NATURAL_RESERVAS_ECOLOGICAS,
-      TIPOS_PATRIMONIO_NATURAL_OUTROS,
-      UNIDADES_CONSERVACAO,
-      TIPOS_PATRIMONIO_CULTURAL,
-      PATRIMONIO_CULTURAL_HISTORICO,
-      PATRIMONIO_CULTURAL_EQUIPAMENTOS,
-      PATRIMONIO_CULTURAL_OUTROS,
-      BARCOS_TURISMO,
-      TURISMO_PESCA,
-      TURISMO_MERGULHO
-    )
-    VALUES (
-      src.NO_MUNICIPIO,
-      src.PROJETOS_MTUR,
-      src.PRINCIPAIS_ATIVIDADES_ECONOMICAS,
-      src.PRINCIPAIS_ATIVIDADES_ECONOMICAS_AGRICULTURA_E_PECUARIA,
-      src.PRINCIPAIS_ATIVIDADES_ECONOMICAS_TURISMO,
-      src.PRINCIPAIS_ATIVIDADES_ECONOMICAS_OUTROS,
-      src.PRINCIPAIS_ATIVIDADES_ECONOMICAS_SERVICOS,
-      src.PRINCIPAIS_ATIVIDADES_ECONOMICAS_COMERCIO,
-      src.PRINCIPAIS_ATIVIDADES_ECONOMICAS_INDUSTRIA_DE_BASE,
-      src.FUNDO_MUNICIPAL_TURISMO,
-      src.PLANO_MUNICIPAL_TURISMO,
-      src.PLANO_MKT_TURISMO,
-      src.PROJETOS_ATIVIDADE_TURISTICA,
-      src.HOSPEDAGEM_QT,
-      src.LEITOS_QT,
-      src.LOCADORAS_VEICULOS,
-      src.AGENCIAS_BANCARIAS_QT,
-      src.AEROPORTO,
-      src.TIPOS_TRANSPORTE,
-      src.TIPOS_TRANSPORTE_RODOVIARIO,
-      src.TIPOS_TRANSPORTE_AQUAVIARIO,
-      src.TIPOS_TRANSPORTE_AEREO,
-      src.TIPOS_TRANSPORTE_OUTROS,
-      src.ACESSO_DESTINO_TURISTICO,
-      src.ACESSO_DESTINO_TURISTICO_HIDROVIA,
-      src.ACESSO_DESTINO_TURISTICO_RODOVIA,
-      src.ACESSO_DESTINO_TURISTICO_AEROPORTO,
-      src.ACESSO_DESTINO_TURISTICO_FERROVIA,
-      src.ACESSO_DESTINO_TURISTICO_OUTROS,
-      src.SITUACAO_SINALIZACAO,
-      src.ROTA_TURISTICA,
-      src.INTERLIGACAO_ENTRE_ATRATIVOS,
-      src.SINALIZACAO_ACESSIBILIDADE,
-      src.RESERVA_ESPACO_ACESSIBILIDADE,
-      src.PROFISSIONAIS_ACESSIBILIDADE,
-      src.EMPRESAS_TURISMO_QT,
-      src.TIPOS_PATRIMONIO_NATURAL,
-      src.TIPOS_PATRIMONIO_NATURAL_PARQUES_NATURAIS,
-      src.TIPOS_PATRIMONIO_NATURAL_UNIDADE_DE_CONSERVACAO,
-      src.TIPOS_PATRIMONIO_NATURAL_RESERVAS_ECOLOGICAS,
-      src.TIPOS_PATRIMONIO_NATURAL_OUTROS,
-      src.UNIDADES_CONSERVACAO,
-      src.TIPOS_PATRIMONIO_CULTURAL,
-      src.PATRIMONIO_CULTURAL_HISTORICO,
-      src.PATRIMONIO_CULTURAL_EQUIPAMENTOS,
-      src.PATRIMONIO_CULTURAL_OUTROS,
-      src.BARCOS_TURISMO,
-      src.TURISMO_PESCA,
-      src.TURISMO_MERGULHO
-    );
-
-DELETE FROM `tccfacens2024.TCC_Turismo_staging.d_infra_Turismo` WHERE 1 = 1;
-
-END;
-
-```
-
-
-#####################################
-
-
-
-```
-CREATE OR REPLACE PROCEDURE `tccfacens2024.TCC_Turismo.merge_d_saude`()
-BEGIN
-
-
-MERGE `tccfacens2024.TCC_Turismo.d_saude` tgt
-USING (SELECT NO_MUNICIPIO,
-cast(LEITOS_QT as Integer) as LEITOS_QT
-FROM `tccfacens2024.TCC_Turismo_staging.d_saude` ) as src
-ON
-  tgt.NO_MUNICIPIO  = src.NO_MUNICIPIO  
-
-WHEN MATCHED THEN
-  UPDATE SET 
-    tgt.NO_MUNICIPIO  = src.NO_MUNICIPIO,
-    tgt.LEITOS_QT  = src.LEITOS_QT
-  
-WHEN NOT MATCHED BY TARGET THEN
-  INSERT (
-    NO_MUNICIPIO ,
-    LEITOS_QT  )
-  VALUES (
-    src.NO_MUNICIPIO ,
-    src.LEITOS_QT
- 
-    );
-    
-DELETE FROM `tccfacens2024.TCC_Turismo_staging.d_saude` WHERE 1 = 1;
-END;
-
-```
-
-
-######################################
-
-
-```
-CREATE OR REPLACE PROCEDURE `tccfacens2024.TCC_Turismo.merge_variavel_dependente_visitantes_tabela_1`()
-BEGIN
-
-
-MERGE `tccfacens2024.TCC_Turismo.variavel_dependente_visitantes_tabela_1` tgt
-USING (
-  SELECT 
-    NO_MUNICIPIO,
-    cast(IDHM as decimal) as IDHM,
-    cast(PIB_PER_CAPITA as decimal) as PIB_PER_CAPITA
-FROM `tccfacens2024.TCC_Turismo_staging.variavel_dependente_visitantes_tabela_1` ) as src
-ON
-  tgt.NO_MUNICIPIO  = src.NO_MUNICIPIO and 
-  tgt.IDHM  = src.IDHM and  
-  tgt.PIB_PER_CAPITA  = src.PIB_PER_CAPITA 
-WHEN MATCHED THEN
-  UPDATE SET 
-    tgt.NO_MUNICIPIO  = src.NO_MUNICIPIO,
-    tgt.IDHM  = src.IDHM,
-    tgt.PIB_PER_CAPITA  = src.PIB_PER_CAPITA
-WHEN NOT MATCHED BY TARGET THEN
-  INSERT (
-    NO_MUNICIPIO ,
-    IDHM,
-    PIB_PER_CAPITA  )
-  VALUES (
-    src.NO_MUNICIPIO ,
-    src.IDHM ,
-    src.PIB_PER_CAPITA
-    );
-    
-DELETE FROM `tccfacens2024.TCC_Turismo_staging.variavel_dependente_visitantes_tabela_1`  WHERE 1 = 1;
-
-END;
-```
-
-
-#####################################
-
-
-
-```
-CREATE OR REPLACE PROCEDURE `tccfacens2024.TCC_Turismo.merge_variavel_dependente_visitantes_tabela_2`()
-BEGIN
-
-
-MERGE `tccfacens2024.TCC_Turismo.variavel_dependente_visitantes_tabela_2` tgt
-USING (
-  SELECT 
-    NO_MUNICIPIO,
-    cast(replace(VISITAS_INTERNACIONAL_QT,'.','') as integer) as VISITAS_INTERNACIONAL_QT,
-    cast(replace(VISITAS_NACIONAL_QT,'.','') as integer) as VISITAS_NACIONAL_QT
-FROM `tccfacens2024.TCC_Turismo_staging.variavel_dependente_visitantes_tabela_2` ) as src
-ON
-  tgt.NO_MUNICIPIO  = src.NO_MUNICIPIO and 
-  tgt.VISITAS_INTERNACIONAL_QT  = src.VISITAS_INTERNACIONAL_QT and  
-  tgt.VISITAS_NACIONAL_QT  = src.VISITAS_NACIONAL_QT 
-WHEN MATCHED THEN
-  UPDATE SET 
-    tgt.NO_MUNICIPIO  = src.NO_MUNICIPIO,
-    tgt.VISITAS_INTERNACIONAL_QT  = src.VISITAS_INTERNACIONAL_QT,
-    tgt.VISITAS_NACIONAL_QT  = src.VISITAS_NACIONAL_QT
-WHEN NOT MATCHED BY TARGET THEN
-  INSERT (
-    NO_MUNICIPIO ,
-    VISITAS_INTERNACIONAL_QT,
-    VISITAS_NACIONAL_QT  )
-  VALUES (
-    src.NO_MUNICIPIO ,
-    src.VISITAS_INTERNACIONAL_QT ,
-    src.VISITAS_NACIONAL_QT
-    );
-    
-DELETE FROM `tccfacens2024.TCC_Turismo_staging.variavel_dependente_visitantes_tabela_2`  WHERE 1 = 1;
-
-END;
-```
-
-
-######################################
-
-
 
 
 ## Criando Cloud Function para Carga e Merge
@@ -945,33 +344,62 @@ END;
 
 Ative os serviços no GCP necessários para o funcionamento da Cloud Function, para isso digite os comando abaixo no shell do google cloud e aguarde alguns minutos até que os serviços estejam habilitados
 
-```
+```bash
 gcloud services enable cloudfunctions.googleapis.com
 gcloud services enable cloudbuild.googleapis.com
 ```
 
 ### Criando e Fazendo Deploy da Cloud Function
 
-Faça o file upload da pasta CloudFunction para o cloud shell do google cloud platform,isso pode ser feito facilmente acessando o botão mais no cloud shell , fazer upload, pasta Após o upload, digite no cloud shell cd CloudFunction para entrar na pasta e digite o comando abaixo para implantar a cloud function
+Faça o file upload da pasta CloudFunction_dinamica para o cloud shell do google cloud platform,isso pode ser feito facilmente acessando o botão mais no cloud shell , fazer upload, pasta Após o upload, digite no cloud shell cd CloudFunction_dinamica para entrar na pasta e digite o comando abaixo para implantar a cloud function
 
-```
+```bash
+cd CloudFunction_dinamica
+
 gcloud functions deploy load_data_cloudstorage_to_bigquery \
     --runtime python310 \
     --trigger-http \
     --allow-unauthenticated \
-    --region southamerica-east1 \
+    --trigger-http --allow-unauthenticated \
+    --region $REGION \
     --entry-point load_data_cloudstorage_to_bigquery
 ```
+verifique se a função foi criada
 
+```bash
+gcloud functions describe load_data_cloudstorage_to_bigquery --region $REGION
+```
+
+caso deseje executar a função criada, execute o trecho abaixo
+
+obs : ao usar variaveis dentro de um json, utilize "" ao invés de '' , para expandir corretamente as variaveis
+
+```bash
+curl -m 70 -X POST https://$REGION_PROJECT_ID.cloudfunctions.net/load_data_cloudstorage_to_bigquery \
+-H "Content-Type: application/json" \
+-d "{
+    \"table_id\": \"$TABLE_ID\",
+    \"uri\": \"$URI\",
+    \"query\": \"TCC_Turismo.merge_d_Agua()\",
+    \"tablefields\": [
+        \"NO_MUNICIPIO\",
+        \"ANO_REF\",
+        \"AGUA_POPULACAO_ATEND_QT\"
+    ]
+}"
+```
 
 ## Criando Cloud Scheduler para Agendamento
 
 ### Criando Conta de Serviço
 Crie uma conta de serviço com permissões específicas.
 
-```
-gcloud iam service-accounts create  account-tcc-facens-scheduler \
---display-name="scheduler tcc facens service account"
+```bash
+SERVICE_ACCOUNT_NAME=account-tcc-facens-scheduler
+SERVICE_ACCOUNT_DESCRIPTION=scheduler_tcc_facens_service_account
+
+gcloud iam service-accounts create  $SERVICE_ACCOUNT_NAME \
+--display-name=$SERVICE_ACCOUNT_DESCRIPTION
 
 ```
 
@@ -980,11 +408,16 @@ gcloud iam service-accounts create  account-tcc-facens-scheduler \
 Defina as permissões necessárias para a conta de serviço.
 
 ```bash
-gcloud iam roles create customroletccfacensscheduler --project tccfacens2024 \
---title "TCC facens scheduler" \
---description "Custom role for scheduling Cloud Function to copy data from Cloud Storage to BigQuery and trigger a stored procedure" \
---permissions "cloudfunctions.functions.invoke,storage.objects.get,storage.objects.list,bigquery.jobs.create,bigquery.tables.get,iam.serviceAccounts.actAs" \
---stage ALPHA
+CUSTOM_ROLE_NAME=customroletccfacensscheduler
+CUSTOM_ROLE_TITLE="TCC facens scheduler"
+CUSTOM_ROLE_DESCRIPTION="Custom role for scheduling Cloud Function to copy data from Cloud Storage to BigQuery and trigger a stored procedure"
+CUSTOM_ROLE_PERMISSIONS="cloudfunctions.functions.invoke,storage.objects.get,storage.objects.list,bigquery.jobs.create,bigquery.tables.get,iam.serviceAccounts.actAs"
+
+gcloud iam roles create $CUSTOM_ROLE_NAME --project $PROJECT_ID \
+--title "$CUSTOM_ROLE_TITLE" \
+--description "$CUSTOM_ROLE_DESCRIPTION" \
+--permissions "$CUSTOM_ROLE_PERMISSIONS"
+
 ```
 
 ### Adicionando Role de Permissões para Conta de Serviço
@@ -992,9 +425,9 @@ gcloud iam roles create customroletccfacensscheduler --project tccfacens2024 \
 Adicione a role com permissões adequadas à conta de serviço.
 
 ```bash
-gcloud projects add-iam-policy-binding tccfacens2024 \
---member=serviceAccount:account-tcc-facens-scheduler@tccfacens2024.iam.gserviceaccount.com \
---role=projects/tccfacens2024/roles/customroletccfacensscheduler
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+--member=serviceAccount:$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com \
+--role=projects/$PROJECT_ID/roles/$CUSTOM_ROLE_NAME
 ```
 
 ### Criando Agendamentos Cloud Scheduler
@@ -1005,174 +438,143 @@ Configure o Cloud Scheduler para realizar o agendamento e execução das Cloud F
 
 Cria o agendamento de carga para a função d_saude  
 
-```
-gcloud scheduler jobs create http load_data_cloudstorage_to_bigquery_d_saude \
---schedule "00 08 * * *" \
---uri "https://southamerica-east1-tccfacens2024.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
---http-method "POST" \
---location=southamerica-east1  \
---headers "Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" \
---time-zone "America/Sao_Paulo" \
---message-body "{\"table_id\":\"tccfacens2024.TCC_Turismo_staging.d_Agua\",\"uri\":\"gs://dados_tcc_facens_sp/output/d_agua-00000-of-00001.csv\",\"query\":\"TCC_Turismo.merge_d_Agua()\",\"tablefields\":[\"NO_MUNICIPIO\",\"ANO_REF\",\"AGUA_POPULACAO_ATEND_QT\"]}" \
---oidc-service-account-email "account-tcc-facens-scheduler@tccfacens2024.iam.gserviceaccount.com"
-```
-
-
-Cria o agendamento de carga para a função ensino_basico  
-
-
-```
+```bash
 gcloud scheduler jobs create http load_data_cloudstorage_to_bigquery_d_ensino_basico \
 --schedule "00 08 * * *" \
---uri "https://southamerica-east1-tccfacens2024.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
+--uri "https://$REGION-$PROJECT_ID.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
 --http-method "POST" \
---location=southamerica-east1  \
+--location=$REGION  \
 --headers "Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" \
 --time-zone "America/Sao_Paulo" \
---message-body "{\"table_id\":\"TCC_Turismo_staging.d_Ensino_Basico\",\"uri\":\"gs://dados_tcc_facens_sp/output/d_ed_basica_lucas-00000-of-00001.csv\",\"query\":\"TCC_Turismo.merge_d_Ensino_Basico()\",\"tablefields\":[\"NO_MUNICIPIO\",\"QT_MAT_BAS\"]}"
---oidc-service-account-email "account-tcc-facens-scheduler@tccfacens2024.iam.gserviceaccount.com"
+--message-body "{\"table_id\":\"$PROJECT_ID.$DATASET_TCC_STAGING.d_Ensino_Basico\",\"uri\":\"$GS_PREFIX$GCP_BUCKET_TCC_FACENS_SP/$OUTPUT_FOLDER/d_ed_basica_lucas-00000-of-00001.csv\",\"query\":\"TCC_Turismo.merge_d_Ensino_Basico()\",\"tablefields\":[\"NO_MUNICIPIO\",\"QT_MAT_BAS\"]}" \
+--oidc-service-account-email "$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 ```
 
-
-
-Cria o agendamento de carga para a função ensino_superior 
-
-
-```
+Agendamento de carga para a função ensino_superior
+```bash
 gcloud scheduler jobs create http load_data_cloudstorage_to_bigquery_d_ensino_superior \
 --schedule "00 08 * * *" \
---uri "https://southamerica-east1-tccfacens2024.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
+--uri "https://$REGION-$PROJECT_ID.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
 --http-method "POST" \
---location=southamerica-east1  \
+--location=$REGION  \
 --headers "Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" \
 --time-zone "America/Sao_Paulo" \
---message-body "{\"table_id\":\"TCC_Turismo_staging.d_Ensino_Superior\",\"uri\":\"gs://dados_tcc_facens_sp/output/d_ed_superior_lucas-00000-of-00001.csv\",\"query\":\"TCC_Turismo.merge_d_Ensino_Superior()\",\"tablefields\":[\"NO_MUNICIPIO\",\"NO_CURSO\",\"NO_CINE_ROTULO\",\"NO_CINE_AREA_GERAL\",\"NO_CINE_AREA_DETALHADA\",\"NO_CINE_AREA_ESPECIFICA\",\"QT_MAT\"]}"
---oidc-service-account-email "account-tcc-facens-scheduler@tccfacens2024.iam.gserviceaccount.com"
+--message-body "{\"table_id\":\"$PROJECT_ID.$DATASET_TCC_STAGING.d_Ensino_Superior\",\"uri\":\"$GS_PREFIX$GCP_BUCKET_TCC_FACENS_SP/$OUTPUT_FOLDER/d_ed_superior_lucas-00000-of-00001.csv\",\"query\":\"TCC_Turismo.merge_d_Ensino_Superior()\",\"tablefields\":[\"NO_MUNICIPIO\",\"NO_CURSO\",\"NO_CINE_ROTULO\",\"NO_CINE_AREA_GERAL\",\"NO_CINE_AREA_DETALHADA\",\"NO_CINE_AREA_ESPECIFICA\",\"QT_MAT\"]}" \
+--oidc-service-account-email "$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 ```
 
-
-
-Cria o agendamento de carga para a função ensino_tecnico 
-
-
-
-```
+Agendamento de carga para a função ensino_tecnico
+```bash
 gcloud scheduler jobs create http load_data_cloudstorage_to_bigquery_d_ensino_tecnico \
 --schedule "00 08 * * *" \
---uri "https://southamerica-east1-tccfacens2024.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
+--uri "https://$REGION-$PROJECT_ID.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
 --http-method "POST" \
---location=southamerica-east1  \
+--location=$REGION  \
 --headers "Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" \
 --time-zone "America/Sao_Paulo" \
---message-body "{\"table_id\":\"TCC_Turismo_staging.d_Ensino_tecnico\",\"uri\":\"gs://dados_tcc_facens_sp/output/d_ed_tecnica_lucas-00000-of-00001.csv\",\"query\":\"TCC_Turismo.merge_d_Ensino_tecnico()\",\"tablefields\":[\"NO_MUNICIPIO\",\"ANO_REF\",\"UF\",\"ESTADO\",\"REGIAO\",\"MICRORREGIAO\",\"POP_TOTAL\",\"POP_URB\",\"FAIXA_POP\",\"DESC_FAIXA\",\"AREA_KM2\"]}"
---oidc-service-account-email "account-tcc-facens-scheduler@tccfacens2024.iam.gserviceaccount.com"
+--message-body "{\"table_id\":\"$PROJECT_ID.$DATASET_TCC_STAGING.d_Ensino_tecnico\",\"uri\":\"$GS_PREFIX$GCP_BUCKET_TCC_FACENS_SP/$OUTPUT_FOLDER/d_ed_tecnica_lucas-00000-of-00001.csv\",\"query\":\"TCC_Turismo.merge_d_Ensino_tecnico()\",\"tablefields\":[\"NO_MUNICIPIO\",\"NO_AREA_CURSO_PROFISSIONAL\",\"NO_CURSO_EDUC_PROFISSIONAL\",\"QT_MAT_CURSO_TEC\"]}" \
+--oidc-service-account-email "$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 ```
 
 
 
-Cria o agendamento de carga para a função infra turismo 
 
-
-
-```
+Agendamento de carga para a função infra_turismo
+```bash
 gcloud scheduler jobs create http load_data_cloudstorage_to_bigquery_d_infra_Turismo \
 --schedule "00 08 * * *" \
---uri "https://southamerica-east1-tccfacens2024.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
+--uri "https://$REGION-$PROJECT_ID.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
 --http-method "POST" \
---location=southamerica-east1  \
+--location=$REGION  \
 --headers "Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" \
 --time-zone "America/Sao_Paulo" \
---message-body "{\"table_id\":\"TCC_Turismo_staging.d_infra_Turismo\",\"uri\":\"gs://dados_tcc_facens_sp/output/d_infra_turismo_novinho.csv\",\"query\":\"TCC_Turismo.merge_d_infra_Turismo()\",\"tablefields\":[\"NO_MUNICIPIO\",\"PROJETOS_MTUR\",\"PRINCIPAIS_ATIVIDADES_ECONOMICAS\",\"PRINCIPAIS_ATIVIDADES_ECONOMICAS_AGRICULTURA_E_PECUARIA\",\"PRINCIPAIS_ATIVIDADES_ECONOMICAS_TURISMO\",\"PRINCIPAIS_ATIVIDADES_ECONOMICAS_OUTROS\",\"PRINCIPAIS_ATIVIDADES_ECONOMICAS_SERVICOS\",\"PRINCIPAIS_ATIVIDADES_ECONOMICAS_COMERCIO\",\"PRINCIPAIS_ATIVIDADES_ECONOMICAS_INDUSTIA_DE_BASE\",\"FUNDO_MUNICIPAL_TURISMO\",\"PLANO_MUNICIPAL_TURISMO\",\"PLANO_MKT_TURISMO\",\"PROJETOS_ATIVIDADE_TURISTICA\",\"HOSPEDAGEM_QT\",\"LEITOS_QT\",\"LOCADORAS_VEICULOS\",\"AGENCIAS_BANCARIAS_QT\",\"AEROPORTO\",\"TIPOS_TRANSPORTE\",\"TIPOS_TRANSPORTE_RODOVIARIO\",\"TIPOS_TRANSPORTE_AQUAVIARIO\",\"TIPOS_TRANSPORTE_AEREO\",\"TIPOS_TRANSPORTE_OUTROS\",\"ACESSO_DESTINO_TURISTICO\",\"ACESSO_DESTINO_TURISTICO_HIDROVIA\",\"ACESSO_DESTINO_TURISTICO_RODOVIA\",\"ACESSO_DESTINO_TURISTICO_AEROPORTO\",\"ACESSO_DESTINO_TURISTICO_FERROVIA\",\"ACESSO_DESTINO_TURISTICO_OUTROS\",\"SITUACAO_SINALIZACAO\",\"ROTA_TURISTICA\",\"INTERLIGACAO_ENTRE_ATRATIVOS\",\"SINALIZACAO_ACESSIBILIDADE\",\"RESERVA_ESPACO_ACESSIBILIDADE\",\"PROFISSIONAIS_ACESSIBILIDADE\",\"EMPRESAS_TURISMO_QT\",\"TIPOS_PATRIMONIO_NATURAL\",\"TIPOS_PATRIMONIO_NATURAL_PARQUES_NATURAIS\",\"TIPOS_PATRIMONIO_NATURAL_UNIDADE_DE_CONSERVACAO\",\"TIPOS_PATRIMONIO_NATURAL_RESERVAS_ECOLOGICAS\",\"TIPOS_PATRIMONIO_NATURAL_OUTROS\",\"UNIDADES_CONSERVACAO\",\"TIPOS_PATRIMONIO_CULTURAL\",\"PATRIMONIO_CULTURAL_HISTORICO\",\"PATRIMONIO_CULTURAL_EQUIPAMENTOS\",\"PATRIMONIO_CULTURAL_OUTROS\",\"BARCOS_TURISMO\",\"TURISMO_PESCA\",\"TURISMO_MERGULHO\"]}"
---oidc-service-account-email "account-tcc-facens-scheduler@tccfacens2024.iam.gserviceaccount.com"
+--message-body "{\"table_id\":\"$PROJECT_ID.$DATASET_TCC_STAGING.d_infra_Turismo\",\"uri\":\"$GS_PREFIX$GCP_BUCKET_TCC_FACENS_SP/$OUTPUT_FOLDER/d_infra_turismo_novinho.csv\",\"query\":\"TCC_Turismo.merge_d_infra_Turismo()\",\"tablefields\":[\"NO_MUNICIPIO\",\"PROJETOS_MTUR\",\"PRINCIPAIS_ATIVIDADES_ECONOMICAS\",\"PRINCIPAIS_ATIVIDADES_ECONOMICAS_AGRICULTURA_E_PECUARIA\",\"PRINCIPAIS_ATIVIDADES_ECONOMICAS_TURISMO\",\"PRINCIPAIS_ATIVIDADES_ECONOMICAS_OUTROS\",\"PRINCIPAIS_ATIVIDADES_ECONOMICAS_SERVICOS\",\"PRINCIPAIS_ATIVIDADES_ECONOMICAS_COMERCIO\",\"PRINCIPAIS_ATIVIDADES_ECONOMICAS_INDUSTRIA_DE_BASE\",\"FUNDO_MUNICIPAL_TURISMO\",\"PLANO_MUNICIPAL_TURISMO\",\"PLANO_MKT_TURISMO\",\"PROJETOS_ATIVIDADE_TURISTICA\",\"HOSPEDAGEM_QT\",\"LEITOS_QT\",\"LOCADORAS_VEICULOS\",\"AGENCIAS_BANCARIAS_QT\",\"AEROPORTO\",\"TIPOS_TRANSPORTE\",\"TIPOS_TRANSPORTE_RODOVIARIO\",\"TIPOS_TRANSPORTE_AQUAVIARIO\",\"TIPOS_TRANSPORTE_AEREO\",\"TIPOS_TRANSPORTE_OUTROS\",\"ACESSO_DESTINO_TURISTICO\",\"ACESSO_DESTINO_TURISTICO_HIDROVIA\",\"ACESSO_DESTINO_TURISTICO_RODOVIA\",\"ACESSO_DESTINO_TURISTICO_AEROPORTO\",\"ACESSO_DESTINO_TURISTICO_FERROVIA\",\"ACESSO_DESTINO_TURISTICO_OUTROS\",\"SITUACAO_SINALIZACAO\",\"ROTA_TURISTICA\",\"INTERLIGACAO_ENTRE_ATRATIVOS\",\"SINALIZACAO_ACESSIBILIDADE\",\"RESERVA_ESPACO_ACESSIBILIDADE\",\"PROFISSIONAIS_ACESSIBILIDADE\",\"EMPRESAS_TURISMO_QT\",\"TIPOS_PATRIMONIO_NATURAL\",\"TIPOS_PATRIMONIO_NATURAL_PARQUES_NATURAIS\",\"TIPOS_PATRIMONIO_NATURAL_UNIDADE_DE_CONSERVACAO\",\"TIPOS_PATRIMONIO_NATURAL_RESERVAS_ECOLOGICAS\",\"TIPOS_PATRIMONIO_NATURAL_OUTROS\",\"UNIDADES_CONSERVACAO\",\"TIPOS_PATRIMONIO_CULTURAL\",\"PATRIMONIO_CULTURAL_HISTORICO\",\"PATRIMONIO_CULTURAL_EQUIPAMENTOS\",\"PATRIMONIO_CULTURAL_OUTROS\",\"BARCOS_TURISMO\",\"TURISMO_PESCA\",\"TURISMO_MERGULHO\"]}" \
+--oidc-service-account-email "$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 ```
 
 
-
-
-
-Cria o agendamento de carga para a função d_localizacao 
-
-
-
-```
+Agendamento de carga para a função d_localizacao
+```bash
 gcloud scheduler jobs create http load_data_cloudstorage_to_bigquery_d_localizacao \
 --schedule "00 08 * * *" \
---uri "https://southamerica-east1-tccfacens2024.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
+--uri "https://$REGION-$PROJECT_ID.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
 --http-method "POST" \
---location=southamerica-east1  \
+--location=$REGION  \
 --headers "Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" \
 --time-zone "America/Sao_Paulo" \
---message-body "{\"table_id\":\"TCC_Turismo_staging.d_Localizacao\",\"uri\":\"gs://dados_tcc_facens_sp/output/tabela_d_populacao.csv-00000-of-00001\",\"query\":\"TCC_Turismo.merge_d_Localizacao()\",\"tablefields\":[\"NO_MUNICIPIO\",\"ANO_REF\",\"UF\",\"ESTADO\",\"REGIAO\",\"MICRORREGIAO\",\"POP_TOTAL\",\"POP_URB\",\"FAIXA_POP\",\"DESC_FAIXA\",\"AREA_KM2\"]}"
---oidc-service-account-email "account-tcc-facens-scheduler@tccfacens2024.iam.gserviceaccount.com"
+--message-body "{\"table_id\":\"$PROJECT_ID.$DATASET_TCC_STAGING.d_Localizacao\",\"uri\":\"$GS_PREFIX$GCP_BUCKET_TCC_FACENS_SP/$OUTPUT_FOLDER/tabela_d_populacao.csv-00000-of-00001\",\"query\":\"TCC_Turismo.merge_d_Localizacao()\",\"tablefields\":[\"NO_MUNICIPIO\",\"ANO_REF\",\"UF\",\"ESTADO\",\"REGIAO\",\"MICRORREGIAO\",\"POP_TOTAL\",\"POP_URB\",\"FAIXA_POP\",\"DESC_FAIXA\",\"AREA_KM2\"]}" \
+--oidc-service-account-email "$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 ```
 
-
-
-
-Cria o agendamento de carga para a função d_regiao_turistica 
-
-```
-
+Agendamento de carga para a função d_regiao_turistica
+```bash
 gcloud scheduler jobs create http load_data_cloudstorage_to_bigquery_d_Regiao_Turistica \
 --schedule "00 08 * * *" \
---uri "https://southamerica-east1-tccfacens2024.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
+--uri "https://$REGION-$PROJECT_ID.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
 --http-method "POST" \
---location=southamerica-east1  \
+--location=$REGION  \
 --headers "Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" \
 --time-zone "America/Sao_Paulo" \
---message-body "{\"table_id\":\"TCC_Turismo_staging.d_Regiao_Turistica\",\"uri\":\"gs://dados_tcc_facens_sp/output/tabela_d_regiao_turistica.csv-00000-of-00001\",\"query\":\"TCC_Turismo.merge_d_Regiao_Turistica()\",\"tablefields\":[\"NO_MUNICIPIO\",\"REGIAO_TURISTICA\",\"CATEGORIA_TURISMO\"]}"
---oidc-service-account-email "account-tcc-facens-scheduler@tccfacens2024.iam.gserviceaccount.com"
+--message-body "{\"table_id\":\"$PROJECT_ID.$DATASET_TCC_STAGING.d_Regiao_Turistica\",\"uri\":\"$GS_PREFIX$GCP_BUCKET_TCC_FACENS_SP/$OUTPUT_FOLDER/tabela_d_regiao_turistica.csv-00000-of-00001\",\"query\":\"TCC_Turismo.merge_d_Regiao_Turistica()\",\"tablefields\":[\"NO_MUNICIPIO\",\"REGIAO_TURISTICA\",\"CATEGORIA_TURISMO\"]}" \
+--oidc-service-account-email "$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 ```
 
 
 
+Agendamento de carga para a função d_saude
 
-
-Cria o agendamento de carga para a função d_Saúde 
-
-```
+```bash
 gcloud scheduler jobs create http load_data_cloudstorage_to_bigquery_d_saude \
 --schedule "00 08 * * *" \
---uri "https://southamerica-east1-tccfacens2024.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
+--uri "https://$REGION-$PROJECT_ID.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
 --http-method "POST" \
 --location=southamerica-east1  \
 --headers "Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" \
 --time-zone "America/Sao_Paulo" \
---message-body "{\"table_id\":\"TCC_Turismo_staging.d_saude\",\"uri\":\"gs://dados_tcc_facens_sp/output/d_leitos.csv-00000-of-00001\",\"query\":\"TCC_Turismo.merge_d_saude()\",\"tablefields\":[\"NO_MUNICIPIO\",\"LEITOS_QT\"]}"
---oidc-service-account-email "account-tcc-facens-scheduler@tccfacens2024.iam.gserviceaccount.com"
+--message-body "{\"table_id\":\"$PROJECT_ID.$DATASET_TCC_STAGING.d_saude\",\"uri\":\"$GS_PREFIX$GCP_BUCKET_TCC_FACENS_SP/$OUTPUT_FOLDER/d_leitos.csv-00000-of-00001\",\"query\":\"TCC_Turismo.merge_d_saude()\",\"tablefields\":[\"NO_MUNICIPIO\",\"LEITOS_QT\"]}" \
+--oidc-service-account-email "$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 ```
 
+Agendamento de carga para a função variavel_dependente_visitantes_tabela_1
 
-
-
-Cria o agendamento de carga para a tabela Variável Dependente Visitantes (Tabela 1): 
-
-
-```
+```bash
 gcloud scheduler jobs create http load_data_cloudstorage_to_bigquery_variavel_dependente_visitantes_tabela_1 \
 --schedule "00 08 * * *" \
---uri "https://southamerica-east1-tccfacens2024.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
+--uri "https://$REGION-$PROJECT_ID.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
 --http-method "POST" \
 --location=southamerica-east1  \
 --headers "Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" \
 --time-zone "America/Sao_Paulo" \
---message-body "{\"table_id\":\"TCC_Turismo_staging.variavel_dependente_visitantes_tabela_1\",\"uri\":\"gs://dados_tcc_facens_sp/output/variavel_dependente_visitantes_tabela_1.csv-00000-of-00001\",\"query\":\"TCC_Turismo.merge_variavel_dependente_visitantes_tabela_1()\",\"tablefields\":[\"NO_MUNICIPIO\",\"IDHM\",\"PIB_PER_CAPITA\"]}"
---oidc-service-account-email "account-tcc-facens-scheduler@tccfacens2024.iam.gserviceaccount.com"
+--message-body "{\"table_id\":\"$PROJECT_ID.$DATASET_TCC_STAGING.variavel_dependente_visitantes_tabela_1\",\"uri\":\"$GS_PREFIX$GCP_BUCKET_TCC_FACENS_SP/$OUTPUT_FOLDER/variavel_dependente_visitantes_tabela_1.csv-00000-of-00001\",\"query\":\"TCC_Turismo.merge_variavel_dependente_visitantes_tabela_1()\",\"tablefields\":[\"NO_MUNICIPIO\",\"IDHM\",\"PIB_PER_CAPITA\"]}" \
+--oidc-service-account-email "$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 ```
 
 
-Cria o agendamento de carga para a tabela Variável Dependente Visitantes (Tabela 2):
+Agendamento de carga para a função variavel_dependente_visitantes_tabela_2
 
 
-
-```
+```bash
 gcloud scheduler jobs create http load_data_cloudstorage_to_bigquery_variavel_dependente_visitantes_tabela_2 \
 --schedule "00 08 * * *" \
---uri "https://southamerica-east1-tccfacens2024.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
+--uri "https://$REGION-$PROJECT_ID.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
 --http-method "POST" \
 --location=southamerica-east1  \
 --headers "Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" \
 --time-zone "America/Sao_Paulo" \
---message-body "{\"table_id\":\"TCC_Turismo_staging.variavel_dependente_visitantes_tabela_2\",\"uri\":\"gs://dados_tcc_facens_sp/output/variavel_dependente_visitantes_tabela_2.csv-00000-of-00001\",\"query\":\"TCC_Turismo.merge_variavel_dependente_visitantes_tabela_2()\",\"tablefields\":[\"NO_MUNICIPIO\",\"VISITAS_INTERNACIONAL_QT\",\"VISITAS_NACIONAL_QT\"]}"
---oidc-service-account-email "account-tcc-facens-scheduler@tccfacens2024.iam.gserviceaccount.com"
+--message-body "{\"table_id\":\"$PROJECT_ID.$DATASET_TCC_STAGING.variavel_dependente_visitantes_tabela_2\",\"uri\":\"$GS_PREFIX$GCP_BUCKET_TCC_FACENS_SP/$OUTPUT_FOLDER/variavel_dependente_visitantes_tabela_2.csv-00000-of-00001\",\"query\":\"TCC_Turismo.merge_variavel_dependente_visitantes_tabela_2()\",\"tablefields\":[\"NO_MUNICIPIO\",\"VISITAS_INTERNACIONAL_QT\",\"VISITAS_NACIONAL_QT\"]}" \
+--oidc-service-account-email "$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com"
+```
+
+Agendamento de carga para a função d_agua
+
+```bash
+gcloud scheduler jobs create http load_data_cloudstorage_to_bigquery_d_agua \
+--schedule "00 08 * * *" \
+--uri "https://$REGION-$PROJECT_ID.cloudfunctions.net/load_data_cloudstorage_to_bigquery" \
+--http-method "POST" \
+--location=$REGION  \
+--headers "Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" \
+--time-zone "America/Sao_Paulo" \
+--message-body "{\"table_id\":\"$PROJECT_ID.$DATASET_TCC_STAGING.d_Agua\",\"uri\":\"$GS_PREFIX$GCP_BUCKET_TCC_FACENS_SP/$OUTPUT_FOLDER/d_agua-00000-of-00001.csv\",\"query\":\"TCC_Turismo.merge_d_Agua()\",\"tablefields\":[\"NO_MUNICIPIO\",\"ANO_REF\",\"AGUA_POPULACAO_ATEND_QT\"]}" \
+--oidc-service-account-email "$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 ```

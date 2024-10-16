@@ -1,0 +1,33 @@
+CREATE OR REPLACE PROCEDURE `tccfacens2024-435322.TCC_Turismo.merge_d_Agua`()
+BEGIN
+
+
+MERGE `tccfacens2024-435322.TCC_Turismo.d_Agua` tgt
+USING (SELECT NO_MUNICIPIO,
+cast(ANO_REF as Integer) as ANO_REF,
+cast(AGUA_POPULACAO_ATEND_QT as Integer) as AGUA_POPULACAO_ATEND_QT 
+FROM `tccfacens2024-435322.TCC_Turismo_staging.d_Agua` ) as src
+ON
+  tgt.NO_MUNICIPIO  = src.NO_MUNICIPIO and 
+  tgt.ANO_REF  = src.ANO_REF and 
+  tgt.AGUA_POPULACAO_ATEND_QT  = src.AGUA_POPULACAO_ATEND_QT 
+
+WHEN MATCHED THEN
+  UPDATE SET 
+    tgt.NO_MUNICIPIO  = src.NO_MUNICIPIO,
+    tgt.ANO_REF  = src.ANO_REF,
+    tgt.AGUA_POPULACAO_ATEND_QT  = src.AGUA_POPULACAO_ATEND_QT 
+  
+WHEN NOT MATCHED BY TARGET THEN
+  INSERT (
+    NO_MUNICIPIO ,
+    ANO_REF ,
+    AGUA_POPULACAO_ATEND_QT  )
+  VALUES (
+    src.NO_MUNICIPIO ,
+    src.ANO_REF ,
+    src.AGUA_POPULACAO_ATEND_QT 
+    );
+    
+DELETE FROM `tccfacens2024-435322.TCC_Turismo_staging.d_Agua` WHERE 1 = 1 ;
+END;
