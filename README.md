@@ -65,6 +65,11 @@ Integração - Fácil integração com demais serviços do google cloud, como  P
 
 - **Google Cloud Storage**  
 
+O google cloud storage é a solução para armazenamento de dados na nuvem , salvando so dados em servidores externos e distribuidos.
+O serviço é escalavel, com alta disponibilidade e seguro, perfeito para o armazenamento de dados de aplicativos, objeto e dados não estruturados.
+O serviço do google clou storage oferece diferentes classes de armazenamento de dados, com diferentes preços, possibilitando menores
+precos de armazenamento para objetos com pouco acesso.
+
 - **Google Big Query**  
 
 Serviço de  datawarehouse do google, totalmente gerenciada e sem servidor,
@@ -74,7 +79,16 @@ O Big query pode ser facilmente utilizado com diversas outras ferramentas, seja 
 
 - **Cloud Functions**  
 
+O Google Cloud Functions é a solução de computação sem servidor do google, possibilitando o desenvolvimento e execução de código sem provisão de servidor , sendo escalavel e flexivel.
+As cloud functions são orientadas a eventos como requisições HTTP, alterações em bancos de dados, novos arquivos num storage ou mensagens num
+topico de mensageria.
+Com suporte a várias linguagens de programação, fácil integração entre serviçosas cloud functions são ótimas opções para desenvolvimento de aplicações modernas.
+
 - **Cloud Scheduler**  
+
+O Google Cloud Scheduler é a solução para agendamento de tarefas do google.
+Indicado para automação de tarefas, envio de emails, carga e recebimento de dados, backups de dados e bancos de dados entre outros.
+Compativel com a maioria dos serviços google, o serviço do google cloud scheduler é uma opção fácil para agendamento, automatização e execução .de tarefas
 
 ## Montando o Ambiente no GCP
 
