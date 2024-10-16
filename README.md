@@ -88,7 +88,7 @@ Com suporte a várias linguagens de programação, fácil integração entre ser
 
 O Google Cloud Scheduler é a solução para agendamento de tarefas do google.
 Indicado para automação de tarefas, envio de emails, carga e recebimento de dados, backups de dados e bancos de dados entre outros.
-Compativel com a maioria dos serviços google, o serviço do google cloud scheduler é uma opção fácil para agendamento, automatização e execução .de tarefas
+Compativel com a maioria dos serviços google, o serviço do google cloud scheduler é uma opção fácil para agendamento, automatização e execução .de tarefas.
 
 ## Montando o Ambiente no GCP
 
